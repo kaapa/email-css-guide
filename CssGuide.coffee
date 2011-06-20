@@ -80,47 +80,40 @@ class exports.CssGuide
       #   css: { (css-property-name): (css-property-value), ... }
       # }
       @tokens = []
-      # Tokenize style element CSS
-      for node in $("style", dom) when "" != $(node).html()
-        @tokens = @tokens.concat @parse node
+
+      # Tokenize style sheets
+      for sheet in dom.styleSheets
+        for rule in sheet.cssRules
+          @tokens.push
+            selector: rule.selectorText
+            css: @parseCssText rule.style.cssText
+
       # Tokenize inline CSS
       for node in $("[style]", dom) when "" != $(node).attr "style"
-        @tokens.push @parse node
+          @tokens.push
+            selector: node
+            css: @parseCssText $(node).attr "style"
 
     # Find a token by name of a CSS property
     findByProperty: (properties...) ->
       tokens = []
       for property in properties
         for token in @tokens when token.css[property] != undefined
-          tokens.push token
+          tokens.push token if -1 is jQuery.inArray token, tokens
       tokens
 
     findBySelector: (selector) ->
       selector = new RegExp("\b#{ selector }\b") unless selector instanceof RegExp
       token.selector for token in @tokens when token.selector instanceof String and token.selector.match(selector)
 
-    # Tokenize CSS
-    # For style sheets returns an array of tokens
-    # For inline styles returns a single token
-    parse: (node) ->
-      if "STYLE" == node.nodeName
-        tokens = []
-        for definition in ($(node).html().match /[^{]+{[^}]+}/gi) || []
-          [match, selector, css] = definition.match /([^{]+){([^}]+)}/m
-          token = { selector: CssGuide.trim(selector), css: {} }
-          for style in css.split(";")
-            [property, value] = style.split(":")
-            if property?
-              token.css[CssGuide.trim property] = if value? then CssGuide.trim value else ""
-          tokens.push token
-        tokens
-      else
-        token = { selector: node, css: {} }
-        for style in $(node).attr("style").split(";")
-          [property, value] = style.split(":")
+    parseCssText: (text) ->
+      css = {}
+      for definition in text.split(";")
+        unless definition is ""
+          [property, value] = definition.split(":")
           if property?
-            token.css[CssGuide.trim property] = if value? then CssGuide.trim value else ""
-        token
+            css[CssGuide.trim property] = if value? then CssGuide.trim value else ""
+      css
 
   class CssGuide.Suite
     # registry is an array of test definition objects.

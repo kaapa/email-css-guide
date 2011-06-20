@@ -99,20 +99,28 @@
     })();
     CssGuide.Parser = (function() {
       function Parser(dom) {
-        var node, _i, _j, _len, _len2, _ref, _ref2;
+        var node, rule, sheet, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3;
         this.tokens = [];
-        _ref = $("style", dom);
+        _ref = dom.styleSheets;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          node = _ref[_i];
-          if ("" !== $(node).html()) {
-            this.tokens = this.tokens.concat(this.parse(node));
+          sheet = _ref[_i];
+          _ref2 = sheet.cssRules;
+          for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+            rule = _ref2[_j];
+            this.tokens.push({
+              selector: rule.selectorText,
+              css: this.parseCssText(rule.style.cssText)
+            });
           }
         }
-        _ref2 = $("[style]", dom);
-        for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-          node = _ref2[_j];
+        _ref3 = $("[style]", dom);
+        for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
+          node = _ref3[_k];
           if ("" !== $(node).attr("style")) {
-            this.tokens.push(this.parse(node));
+            this.tokens.push({
+              selector: node,
+              css: this.parseCssText($(node).attr("style"))
+            });
           }
         }
       }
@@ -126,7 +134,9 @@
           for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
             token = _ref[_j];
             if (token.css[property] !== void 0) {
-              tokens.push(token);
+              if (-1 === jQuery.inArray(token, tokens)) {
+                tokens.push(token);
+              }
             }
           }
         }
@@ -147,44 +157,20 @@
         }
         return _results;
       };
-      Parser.prototype.parse = function(node) {
-        var css, definition, match, property, selector, style, token, tokens, value, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
-        if ("STYLE" === node.nodeName) {
-          tokens = [];
-          _ref = ($(node).html().match(/[^{]+{[^}]+}/gi)) || [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            definition = _ref[_i];
-            _ref2 = definition.match(/([^{]+){([^}]+)}/m), match = _ref2[0], selector = _ref2[1], css = _ref2[2];
-            token = {
-              selector: CssGuide.trim(selector),
-              css: {}
-            };
-            _ref3 = css.split(";");
-            for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
-              style = _ref3[_j];
-              _ref4 = style.split(":"), property = _ref4[0], value = _ref4[1];
-              if (property != null) {
-                token.css[CssGuide.trim(property)] = value != null ? CssGuide.trim(value) : "";
-              }
-            }
-            tokens.push(token);
-          }
-          return tokens;
-        } else {
-          token = {
-            selector: node,
-            css: {}
-          };
-          _ref5 = $(node).attr("style").split(";");
-          for (_k = 0, _len3 = _ref5.length; _k < _len3; _k++) {
-            style = _ref5[_k];
-            _ref6 = style.split(":"), property = _ref6[0], value = _ref6[1];
+      Parser.prototype.parseCssText = function(text) {
+        var css, definition, property, value, _i, _len, _ref, _ref2;
+        css = {};
+        _ref = text.split(";");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          definition = _ref[_i];
+          if (definition !== "") {
+            _ref2 = definition.split(":"), property = _ref2[0], value = _ref2[1];
             if (property != null) {
-              token.css[CssGuide.trim(property)] = value != null ? CssGuide.trim(value) : "";
+              css[CssGuide.trim(property)] = value != null ? CssGuide.trim(value) : "";
             }
           }
-          return token;
         }
+        return css;
       };
       return Parser;
     })();
