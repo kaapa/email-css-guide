@@ -7,7 +7,7 @@
   <script src="application.js"></script>
   <script type="text/javascript">
   jQuery(document).ready(function($){
-    new CssGuide.Controller(new CssGuide.EmailSuite, $("form"), $("table"))
+    new CssGuide.Controller(new CssGuide.EmailSuite, $("form"), $("table"), $(".tooltip"))
   });
   </script>
   <style type="text/css" media="screen">
@@ -60,6 +60,17 @@
       background-color: red;
       color: white;
     }
+    div.tooltip { 
+      display:none; 
+      position:absolute; 
+      padding:5px 10px; 
+      margin:1em 0 3em;
+      border: 1px solid black;
+      -moz-border-radius:4px; 
+      -webkit-border-radius:4px; 
+      border-radius:4px;   
+      background: white;
+    }
   </style>
 </head>
 <body>
@@ -83,6 +94,7 @@
       <div class="content">
         <table></table>
       </div>
+      <div class="tooltip"></div>
     </div>
   </section>
 </body>

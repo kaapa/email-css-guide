@@ -28,11 +28,12 @@
       return string.replace(/^\s*/, "").replace(/\s*$/, "");
     };
     CssGuide.Controller = (function() {
-      function Controller(suite, form, table) {
+      function Controller(suite, form, table, tooltip) {
         var client, div, id, template, _ref;
         this.suite = suite;
         this.form = form;
         this.table = table;
+        this.tooltip = tooltip;
         div = $("div:nth-child(2)", this.form);
         template = $("[name='client[]']").closest("label").remove();
         _ref = this.suite.getClients();
@@ -40,26 +41,34 @@
           client = _ref[id];
           div.append(template.clone().append(client.name).find("input").val(id).end());
         }
-        $("[data-match-id]").live("mouseenter", function() {
-          var id, _i, _len, _ref2, _results;
-          _ref2 = $(this).attr("data-match-id").split(" ");
-          _results = [];
+        $("[data-match-id]").live("mouseenter", __bind(function(e) {
+          var description, id, position, _i, _len, _ref2;
+          description = [];
+          position = $(e.target).position();
+          _ref2 = $(e.target).attr("data-match-id").split(" ");
           for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
             id = _ref2[_i];
-            _results.push($("[data-match-id~='" + id + "']").addClass("highlight"));
+            description.push(this.suite.getTest(id).description);
+            $("[data-match-id~='" + id + "']").addClass("highlight");
           }
-          return _results;
-        });
-        $("[data-match-id]").live("mouseleave", function() {
+          this.tooltip.text(description.join("\n\n"));
+          return this.tooltip.css({
+            display: "block",
+            top: "" + (position.top + 5) + "px",
+            left: position.left
+          });
+        }, this));
+        $("[data-match-id]").live("mouseleave", __bind(function(e) {
           var id, _i, _len, _ref2, _results;
-          _ref2 = $(this).attr("data-match-id").split(" ");
+          this.tooltip.css("display", "none");
+          _ref2 = $(e.target).attr("data-match-id").split(" ");
           _results = [];
           for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
             id = _ref2[_i];
             _results.push($("[data-match-id~='" + id + "']").removeClass("highlight"));
           }
           return _results;
-        });
+        }, this));
         this.form.bind("submit", __bind(function(e) {
           e.preventDefault();
           return this.test($("textarea", this.form.markup).val(), this.getSelectedClients());
@@ -115,6 +124,21 @@
           token = _ref[_i];
           if (token.css[property] !== void 0) {
             _results.push(token);
+          }
+        }
+        return _results;
+      };
+      Parser.prototype.findBySelector = function(selector) {
+        var token, _i, _len, _ref, _results;
+        if (!(selector instanceof RegExp)) {
+          selector = new RegExp("\b" + selector + "\b");
+        }
+        _ref = this.tokens;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          token = _ref[_i];
+          if (token.selector instanceof String && token.selector.match(selector)) {
+            _results.push(token.selector);
           }
         }
         return _results;
@@ -193,15 +217,16 @@
         for (id = 0, _len = _ref.length; id < _len; id++) {
           test = _ref[id];
           if (CssGuide.intersection(test.clients, clients).length) {
-            _ref2 = test.callback(dom, parser);
+            _ref2 = test.callback(dom, parser) || [];
             for (_i = 0, _len2 = _ref2.length; _i < _len2; _i++) {
               matches = _ref2[_i];
-              if (matches.length) {
-                for (_j = 0, _len3 = matches.length; _j < _len3; _j++) {
-                  match = matches[_j];
-                  meta = $(match).attr('data-match-id') ? $(match).attr('data-match-id') + ' ' + id : id;
-                  $(match).attr('data-match-id', meta);
-                }
+              if (!(matches instanceof Array)) {
+                matches = [matches];
+              }
+              for (_j = 0, _len3 = matches.length; _j < _len3; _j++) {
+                match = matches[_j];
+                meta = $(match).attr('data-match-id') ? $(match).attr('data-match-id') + ' ' + id : id;
+                $(match).attr('data-match-id', meta);
               }
             }
           }
@@ -223,6 +248,9 @@
       };
       Suite.prototype.getClients = function() {
         return this.constructor.clients;
+      };
+      Suite.prototype.getTest = function(id) {
+        return this.constructor.registry[id];
       };
       return Suite;
     })();
@@ -306,31 +334,97 @@
         }
       };
       EmailSuite.defineTest({
-        description: "Does not support 'font-family' CSS attribute",
-        clients: ["gmail", "outlook_07"],
+        description: "Does not support <style> element within <head>",
+        clients: ["android_gmail", "blackberry", "gmail", "myspace", "notes_7", "palm_garnet"],
         callback: function(dom, parser) {
-          var token, _i, _len, _ref, _results;
-          _ref = parser.findByProperty("font-family");
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            token = _ref[_i];
-            _results.push($(token.selector, dom));
-          }
-          return _results;
+          return $("head style", dom);
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support 'font-weight' CSS attribute",
-        clients: ["gmail", "outlook_07"],
+        description: "Does not support <style> element within <body>",
+        clients: ["android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "palm_garnet"],
         callback: function(dom, parser) {
-          var token, _i, _len, _ref, _results;
-          _ref = parser.findByProperty("font-weight");
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            token = _ref[_i];
-            _results.push($(token.selector, dom));
+          return $("body style", dom);
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support <link> element within <head>",
+        clients: ["android_gmail", "blackberry", "gmail", "myspace", "palm_garnet"],
+        callback: function(dom, parser) {
+          return $("head link", dom);
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support <link> element within <body>",
+        clients: ["android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "palm_garnet"],
+        callback: function(dom, parser) {
+          return $("body link", dom);
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'element' CSS selector",
+        clients: ["android_gmail", "blackberry", "gmail", "myspace", "notes_7", "webos", "win_mobile_65"],
+        callback: function(dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/\b[a-z1-9]\b/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
           }
-          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support '*' CSS selector",
+        clients: ["android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "outlook_07", "webos", "yahoo_classic", "win_mobile_65"],
+        callback: function(dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/\*/);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support '.class' CSS selector",
+        clients: ["android_gmail", "gmail", "myspace", "notes_7"],
+        callback: function(dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/\./);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support '#id' CSS selector",
+        clients: ["android_gmail", "gmail", "hotmail", "mobileme", "myspace", "notes_7"],
+        callback: function(dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/#/);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support ':link' CSS selector",
+        clients: ["android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "palm_garnet"],
+        callback: function(dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:link/);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support ':active' or ':hover' CSS selector",
+        clients: ["android_gmail", "aol_web", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "outlook_07", "palm_garnet"],
+        callback: function(dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:active|:hover/);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
         }
       });
       return EmailSuite;

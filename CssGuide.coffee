@@ -15,18 +15,27 @@ class exports.CssGuide
   # Binds UI elements to events
   #
   class CssGuide.Controller
-    constructor: (@suite, @form, @table) ->
+    constructor: (@suite, @form, @table, @tooltip) ->
       div = $("div:nth-child(2)", @form)      
-      template = $("[name='client[]']").closest("label").remove()      
+      template = $("[name='client[]']").closest("label").remove()
       for id, client of @suite.getClients()
         div.append template.clone().append(client.name).find("input").val(id).end()
 
-      $("[data-match-id]").live "mouseenter", () ->
-        for id in $(this).attr("data-match-id").split(" ")
+      $("[data-match-id]").live "mouseenter", (e) =>
+        description = []
+        position = $(e.target).position()
+        for id in $(e.target).attr("data-match-id").split(" ")
+          description.push @suite.getTest(id).description
           $("[data-match-id~='#{ id }']").addClass("highlight")
+        @tooltip.text description.join("\n\n")
+        @tooltip.css
+          display: "block"
+          top: "#{position.top + 5}px",
+          left: position.left
 
-      $("[data-match-id]").live "mouseleave", () ->
-        for id in $(this).attr("data-match-id").split(" ")
+      $("[data-match-id]").live "mouseleave", (e) =>
+        @tooltip.css "display", "none"
+        for id in $(e.target).attr("data-match-id").split(" ")
           $("[data-match-id~='#{ id }']").removeClass("highlight")
 
       @form.bind "submit", (e) =>
@@ -81,6 +90,10 @@ class exports.CssGuide
     # Find a token by name of a CSS property
     findByProperty: (property) ->
       token for token in @tokens when token.css[property] != undefined
+
+    findBySelector: (selector) ->
+      selector = new RegExp("\b#{ selector }\b") unless selector instanceof RegExp
+      token.selector for token in @tokens when token.selector instanceof String and token.selector.match(selector)
 
     # Tokenize CSS
     # For style sheets returns an array of tokens
@@ -153,7 +166,8 @@ class exports.CssGuide
       parser = new CssGuide.Parser dom
 
       for test, id in @constructor.registry when CssGuide.intersection(test.clients, clients).length
-        for matches in test.callback(dom, parser) when matches.length
+        for matches in test.callback(dom, parser) || []
+          matches = [matches] unless matches instanceof Array
           for match in matches
             meta = if $(match).attr('data-match-id') then $(match).attr('data-match-id') + ' ' + id else id
             $(match).attr('data-match-id', meta)
@@ -193,6 +207,9 @@ class exports.CssGuide
 
     getClients: ->
       @constructor.clients
+
+    getTest: (id) ->
+      @constructor.registry[id]
 
   class CssGuide.EmailSuite extends CssGuide.Suite
     @clients = 
@@ -246,15 +263,67 @@ class exports.CssGuide
         name: "Windows Mobile 6.5"
 
     @defineTest
-      description: "Does not support 'font-family' CSS attribute"
-      clients: [ "gmail", "outlook_07" ]
+      description: "Does not support <style> element within <head>"
+      clients: [ "android_gmail", "blackberry", "gmail", "myspace", "notes_7", "palm_garnet" ]
       callback: (dom, parser) ->
-        for token in parser.findByProperty("font-family")
-          $(token.selector, dom)
+        $("head style", dom)
 
     @defineTest
-      description: "Does not support 'font-weight' CSS attribute"
-      clients: [ "gmail", "outlook_07" ]
+      description: "Does not support <style> element within <body>"
+      clients: [ "android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "palm_garnet" ]
       callback: (dom, parser) ->
-        for token in parser.findByProperty("font-weight")
-          $(token.selector, dom)
+        $("body style", dom)
+
+    @defineTest
+      description: "Does not support <link> element within <head>"
+      clients: [ "android_gmail", "blackberry", "gmail", "myspace", "palm_garnet" ]
+      callback: (dom, parser) ->
+        $("head link", dom)
+
+    @defineTest
+      description: "Does not support <link> element within <body>"
+      clients: [ "android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "palm_garnet" ]
+      callback: (dom, parser) ->
+        $("body link", dom)
+
+    @defineTest
+      description: "Does not support 'element' CSS selector"
+      clients: [ "android_gmail", "blackberry", "gmail", "myspace", "notes_7", "webos", "win_mobile_65" ]
+      callback: (dom, parser) ->
+        selectors = parser.findBySelector /\b[a-z1-9]\b/i
+        $(selectors.join(", "), dom) if selectors.length > 0
+
+    @defineTest
+      description: "Does not support '*' CSS selector"
+      clients: [ "android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "outlook_07", "webos", "yahoo_classic", "win_mobile_65" ]
+      callback: (dom, parser) ->
+        selectors = parser.findBySelector /\*/
+        $(selectors.join(", "), dom) if selectors.length > 0
+
+    @defineTest
+      description: "Does not support '.class' CSS selector"
+      clients: [ "android_gmail", "gmail", "myspace", "notes_7" ]
+      callback: (dom, parser) ->
+        selectors = parser.findBySelector /\./
+        $(selectors.join(", "), dom) if selectors.length > 0
+
+    @defineTest
+      description: "Does not support '#id' CSS selector"
+      clients: [ "android_gmail", "gmail", "hotmail", "mobileme", "myspace", "notes_7" ]
+      callback: (dom, parser) ->
+        selectors = parser.findBySelector  /#/
+        $(selectors.join(", "), dom) if selectors.length > 0
+
+    @defineTest
+      description: "Does not support ':link' CSS selector"
+      clients: [ "android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "palm_garnet" ]
+      callback: (dom, parser) ->
+        selectors = parser.findBySelector /:link/
+        $(selectors.join(", "), dom) if selectors.length > 0
+
+    @defineTest
+      description: "Does not support ':active' or ':hover' CSS selector"
+      clients: [ "android_gmail", "aol_web", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "outlook_07", "palm_garnet" ]
+      callback: (dom, parser) ->
+        selectors = parser.findBySelector /:active|:hover/
+        $(selectors.join(", "), dom) if selectors.length > 0
