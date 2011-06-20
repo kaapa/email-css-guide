@@ -103,7 +103,7 @@ class exports.CssGuide
         tokens = []
         for definition in ($(node).html().match /[^{]+{[^}]+}/gi) || []
           [match, selector, css] = definition.match /([^{]+){([^}]+)}/m
-          token = { selector: selector, css: {} }
+          token = { selector: CssGuide.trim(selector), css: {} }
           for style in css.split(";")
             [property, value] = style.split(":")
             if property?
@@ -111,7 +111,7 @@ class exports.CssGuide
           tokens.push token
         tokens
       else
-        token = { selector: node, css: {} }      
+        token = { selector: node, css: {} }
         for style in $(node).attr("style").split(";")
           [property, value] = style.split(":")
           if property?
@@ -124,7 +124,7 @@ class exports.CssGuide
     # Structure:
     # 
     # { 
-    #   description: (string), 
+    #   description: (string),
     #   clients: (array),
     #   callback: (function)
     # }
@@ -180,7 +180,7 @@ class exports.CssGuide
       # indentation)
       for match in (markup.match /<[^>]+data-match-id="[^"]+"[^>]*>/gi) || [] when match?
         nid = match.match(/data-node-id="([^"]+)"/i)?[1]
-        mid = match.match(/data-match-id="([^"]+)"/i)?[1]        
+        mid = match.match(/data-match-id="([^"]+)"/i)?[1]
         input = input.replace(
           new RegExp('data-node-id="' + nid + '"'), 
           'data-match-id="' + mid + '"'
@@ -201,7 +201,7 @@ class exports.CssGuide
       # After document is escaped the highlight wrappers can be transformed to
       # real DOM nodes
       input = input.replace(
-        new RegExp('{span class="match" data-match-id="([^"]+)"}(.+?){\/span}', "g"), 
+        new RegExp('{span class="match" data-match-id="([^"]+)"}(.+?){\/span}', "g"),
         '<span class="match" data-match-id="$1">$2</span>'
       )
 
@@ -327,3 +327,171 @@ class exports.CssGuide
       callback: (dom, parser) ->
         selectors = parser.findBySelector /:active|:hover/
         $(selectors.join(", "), dom) if selectors.length > 0
+
+    @defineTest
+      description: "Does not support ':first-line' CSS selector"
+      clients: [ "android_gmail", "aol_web", "blackberry", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "outlook_07", "palm_garnet", "win_mobile_65", "yahoo_mail" ]
+      callback: (dom, parser) ->
+        selectors = parser.findBySelector /:first-line/
+        $(selectors.join(", "), dom) if selectors.length > 0
+
+    @defineTest
+      description: "Does not support ':first-letter' CSS selector"
+      clients: [ "android_gmail", "aol_web", "blackberry", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "outlook_07", "palm_garnet", "win_mobile_65", "yahoo_mail" ]
+      callback: (dom, parser) ->
+        selectors = parser.findBySelector /:first-letter/
+        $(selectors.join(", "), dom) if selectors.length > 0
+
+    @defineTest
+      description: "Does not support '>' CSS selector"
+      clients: [ "android_gmail", "aol_10", "blackberry", "gmail", "hotmail", "apple_iphone_3", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "webos", "win_mobile_65", "windows_mail" ]
+      callback: (dom, parser) ->
+        selectors = parser.findBySelector />/
+        $(selectors.join(", "), dom) if selectors.length > 0
+
+    @defineTest
+      description: "Does not support ':focus' CSS selector"
+      clients: [ "android_gmail", "aol_10", "blackberry", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "win_mobile_65", "windows_mail" ]
+      callback: (dom, parser) ->
+        selectors = parser.findBySelector /:focus/
+        $(selectors.join(", "), dom) if selectors.length > 0
+
+    @defineTest
+      description: "Does not support '+' CSS selector"
+      clients: [ "android_gmail", "aol_10", "blackberry", "entourage_04", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "windows_mail", "yahoo_classic", "yahoo_mail" ]
+      callback: (dom, parser) ->
+        selectors = parser.findBySelector /\+/
+        $(selectors.join(", "), dom) if selectors.length > 0
+
+    @defineTest
+      description: "Does not support '[attribute]' CSS selector"
+      clients: [ "android_gmail", "aol_10", "blackberry", "entourage_04", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "windows_mail" ]
+      callback: (dom, parser) ->
+        selectors = parser.findBySelector /\[/
+        $(selectors.join(", "), dom) if selectors.length > 0
+
+    @defineTest
+      description: "Does not support 'direction' CSS property"
+      clients: [ "android_gmail", "entourage_04", "gmail", "notes_7", "outlook_07" ]
+      callback: (dom, parser) ->
+        for token in parser.findByProperty("direction")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support 'font' CSS property"
+      clients: [ "blackberry", "notes_7", "palm_garnet" ]
+      callback: (dom, parser) ->
+        for token in parser.findByProperty("font")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support 'font-family' CSS property"
+      clients: [ "blackberry", "palm_garnet", "win_mobile_65" ]
+      callback: (dom, parser) ->
+        for token in parser.findByProperty("font-family")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support 'font-style' CSS property"
+      clients: [ "palm_garnet" ]
+      callback: (dom, parser) ->
+        for token in parser.findByProperty("font-style")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support 'font-variant' CSS property"
+      clients: [ "blackberry", "notes_7", "palm_garnet" ]
+      callback: (dom, parser) ->
+        for token in parser.findByProperty("font-variant")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support 'font-size' CSS property"
+      clients: [ "blackberry" ]
+      callback: (dom, parser) ->
+        for token in parser.findByProperty("font-size")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support 'font-size' CSS property"
+      clients: [ "blackberry" ]
+      callback: (dom, parser) ->
+        for token in parser.findByProperty("font-size")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support 'letter-spacing' CSS property"
+      clients: [ "blackberry", "notes_7", "palm_garnet", "win_mobile_65" ]
+      callback: (dom, parser) ->
+        for token in parser.findByProperty("letter-spacing")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support 'line-height' CSS property"
+      clients: [ "blackberry", "myspace", "notes_7", "palm_garnet" ]
+      callback: (dom, parser) ->
+        for token in parser.findByProperty("line-height")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support 'line-height' CSS property"
+      clients: [ "blackberry", "myspace", "notes_7", "palm_garnet" ]
+      callback: (dom, parser) ->
+        for token in parser.findByProperty("line-height")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support 'text-indent' CSS property"
+      clients: [ "blackberry", "notes_7" ]
+      callback: (dom, parser) ->
+        for token in parser.findByProperty("text-indent")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support 'text-overflow' CSS property"
+      clients: [ "blackberry", "entourage_04", "myspace", "notes_7", "outlook_07", "palm_garnet", "thunderbird_2", "yahoo_classic", "yahoo_mail" ]
+      callback: (dom, parser) ->
+        for token in parser.findByProperty("text-overflow")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support 'text-shadow' CSS property"
+      clients: [ "aol_10", "aol_web", "blackberry", "entourage_04", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "thunderbird_2", "webos", "windows_mail", "win_mobile_65" ]
+      callback: (dom, parser) ->
+        for token in parser.findByProperty("text-shadow")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support 'text-transform' CSS property"
+      clients: [ "notes_7", "palm_garnet" ]
+      callback: (dom, parser) ->
+        for token in parser.findByProperty("text-transform")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support 'white-space' CSS property"
+      clients: [ "aol_10", "aol_web", "blackberry", "notes_7", "notes_8", "outlook_03", "palm_garnet", "windows_mail", "win_mobile_65" ]
+      callback: (dom, parser) ->
+        for token in parser.findByProperty("white-space")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support 'word-spacing' CSS property"
+      clients: [ "blackberry", "notes_7", "outlook_07", "palm_garnet", "win_mobile_65" ]
+      callback: (dom, parser) ->
+        for token in parser.findByProperty("word-spacing")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support 'word-wrap' CSS property"
+      clients: [ "android_gmail", "blackberry", "gmail", "hotmail", "entourage_04", "myspace", "notes_7", "outlook_07", "palm_garnet", "thunderbird_2", "win_mobile_65" ]
+      callback: (dom, parser) ->
+        for token in parser.findByProperty("word-wrap")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support 'vertical-align' CSS property"
+      clients: [ "blackberry", "android_email", "notes_7", "outlook_07" ]
+      callback: (dom, parser) ->
+        for token in parser.findByProperty("vertical-align")
+          $(token.selector, dom)

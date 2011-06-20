@@ -152,7 +152,7 @@
             definition = _ref[_i];
             _ref2 = definition.match(/([^{]+){([^}]+)}/m), match = _ref2[0], selector = _ref2[1], css = _ref2[2];
             token = {
-              selector: selector,
+              selector: CssGuide.trim(selector),
               css: {}
             };
             _ref3 = css.split(";");
@@ -425,6 +425,324 @@
           if (selectors.length > 0) {
             return $(selectors.join(", "), dom);
           }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support ':first-line' CSS selector",
+        clients: ["android_gmail", "aol_web", "blackberry", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "outlook_07", "palm_garnet", "win_mobile_65", "yahoo_mail"],
+        callback: function(dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:first-line/);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support ':first-letter' CSS selector",
+        clients: ["android_gmail", "aol_web", "blackberry", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "outlook_07", "palm_garnet", "win_mobile_65", "yahoo_mail"],
+        callback: function(dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:first-letter/);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support '>' CSS selector",
+        clients: ["android_gmail", "aol_10", "blackberry", "gmail", "hotmail", "apple_iphone_3", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "webos", "win_mobile_65", "windows_mail"],
+        callback: function(dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/>/);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support ':focus' CSS selector",
+        clients: ["android_gmail", "aol_10", "blackberry", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "win_mobile_65", "windows_mail"],
+        callback: function(dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:focus/);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support '+' CSS selector",
+        clients: ["android_gmail", "aol_10", "blackberry", "entourage_04", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "windows_mail", "yahoo_classic", "yahoo_mail"],
+        callback: function(dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/\+/);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support '[attribute]' CSS selector",
+        clients: ["android_gmail", "aol_10", "blackberry", "entourage_04", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "windows_mail"],
+        callback: function(dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/\[/);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'direction' CSS property",
+        clients: ["android_gmail", "entourage_04", "gmail", "notes_7", "outlook_07"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("direction");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'font' CSS property",
+        clients: ["blackberry", "notes_7", "palm_garnet"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("font");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'font-family' CSS property",
+        clients: ["blackberry", "palm_garnet", "win_mobile_65"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("font-family");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'font-style' CSS property",
+        clients: ["palm_garnet"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("font-style");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'font-variant' CSS property",
+        clients: ["blackberry", "notes_7", "palm_garnet"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("font-variant");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'font-size' CSS property",
+        clients: ["blackberry"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("font-size");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'font-size' CSS property",
+        clients: ["blackberry"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("font-size");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'letter-spacing' CSS property",
+        clients: ["blackberry", "notes_7", "palm_garnet", "win_mobile_65"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("letter-spacing");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'line-height' CSS property",
+        clients: ["blackberry", "myspace", "notes_7", "palm_garnet"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("line-height");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'line-height' CSS property",
+        clients: ["blackberry", "myspace", "notes_7", "palm_garnet"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("line-height");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'text-indent' CSS property",
+        clients: ["blackberry", "notes_7"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("text-indent");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'text-overflow' CSS property",
+        clients: ["blackberry", "entourage_04", "myspace", "notes_7", "outlook_07", "palm_garnet", "thunderbird_2", "yahoo_classic", "yahoo_mail"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("text-overflow");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'text-shadow' CSS property",
+        clients: ["aol_10", "aol_web", "blackberry", "entourage_04", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "thunderbird_2", "webos", "windows_mail", "win_mobile_65"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("text-shadow");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'text-transform' CSS property",
+        clients: ["notes_7", "palm_garnet"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("text-transform");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'white-space' CSS property",
+        clients: ["aol_10", "aol_web", "blackberry", "notes_7", "notes_8", "outlook_03", "palm_garnet", "windows_mail", "win_mobile_65"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("white-space");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'word-spacing' CSS property",
+        clients: ["blackberry", "notes_7", "outlook_07", "palm_garnet", "win_mobile_65"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("word-spacing");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'word-wrap' CSS property",
+        clients: ["android_gmail", "blackberry", "gmail", "hotmail", "entourage_04", "myspace", "notes_7", "outlook_07", "palm_garnet", "thunderbird_2", "win_mobile_65"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("word-wrap");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'vertical-align' CSS property",
+        clients: ["blackberry", "android_email", "notes_7", "outlook_07"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("vertical-align");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
         }
       });
       return EmailSuite;
