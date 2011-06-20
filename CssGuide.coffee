@@ -86,7 +86,16 @@ class exports.CssGuide
     # For inline styles returns a single token
     parse: (node) ->
       if "STYLE" == node.nodeName
-        []
+        tokens = []
+        for definition in ($(node).html().match /[^{]+{[^}]+}/gi) || []
+          [match, selector, css] = definition.match /([^{]+){([^}]+)}/m
+          token = { selector: selector, css: {} }
+          for style in css.split(";")
+            [property, value] = style.split(":")
+            if property?
+              token.css[CssGuide.trim property] = if value? then CssGuide.trim value else ""
+          tokens.push token
+        tokens
       else
         token = { selector: node, css: {} }      
         for style in $(node).attr("style").split(";")
