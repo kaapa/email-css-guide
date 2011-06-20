@@ -1,1 +1,340 @@
-(function(){var a,b=function(a,b){return function(){return a.apply(b,arguments)}},c=Object.prototype.hasOwnProperty,d=function(a,b){function e(){this.constructor=a}for(var d in b)c.call(b,d)&&(a[d]=b[d]);e.prototype=b.prototype,a.prototype=new e,a.__super__=b.prototype;return a};if(typeof a=="undefined"||a===null)a=window;a.CssGuide=function(){function a(){}a.intersection=function(a,b){var c,d,e,f;f=[];for(d=0,e=a.length;d<e;d++)c=a[d],-1<jQuery.inArray(c,b)&&f.push(c);return f},a.trim=function(a){return a.replace(/^\s*/,"").replace(/\s*$/,"")},a.Controller=function(){function a(a,c,d){var e,f,g,h,i;this.suite=a,this.form=c,this.table=d,f=$("div:nth-child(2)",this.form),h=$("[name='client[]']").closest("label").remove(),i=this.suite.getClients();for(g in i)e=i[g],f.append(h.clone().append(e.name).find("input").val(g).end());$("[data-match-id]").live("mouseenter",function(){var a,b,c,d,e;d=$(this).attr("data-match-id").split(" "),e=[];for(b=0,c=d.length;b<c;b++)a=d[b],e.push($("[data-match-id~='"+a+"']").addClass("highlight"));return e}),$("[data-match-id]").live("mouseleave",function(){var a,b,c,d,e;d=$(this).attr("data-match-id").split(" "),e=[];for(b=0,c=d.length;b<c;b++)a=d[b],e.push($("[data-match-id~='"+a+"']").removeClass("highlight"));return e}),this.form.bind("submit",b(function(a){a.preventDefault();return this.test($("textarea",this.form.markup).val(),this.getSelectedClients())},this))}a.prototype.test=function(a,b){var c,d,e,f;this.table.html(""),a=this.suite.execute(a,b),f=a.split("\n");for(c=0,e=f.length;c<e;c++)d=f[c],this.table.append("<tr>\n  <th>"+(c+1)+'</th>\n  <td style="padding-left:'+d.match(/^(\s*)/)[1].length+'em">'+d+"</td>\n</tr>");return $("#results").show()},a.prototype.getSelectedClients=function(){var a,b,c,d,e;d=$("[name='client[]']:checked",this.form),e=[];for(b=0,c=d.length;b<c;b++)a=d[b],e.push(a.value);return e};return a}(),a.Parser=function(){function b(a){var b,c,d,e,f,g,h;this.tokens=[],g=$("style",a);for(c=0,e=g.length;c<e;c++)b=g[c],""!==$(b).html()&&(this.tokens=this.tokens.concat(this.parse(b)));h=$("[style]",a);for(d=0,f=h.length;d<f;d++)b=h[d],""!==$(b).attr("style")&&this.tokens.push(this.parse(b))}b.prototype.findByProperty=function(a){var b,c,d,e,f;e=this.tokens,f=[];for(c=0,d=e.length;c<d;c++)b=e[c],b.css[a]!==void 0&&f.push(b);return f},b.prototype.parse=function(b){var c,d,e,f,g,h,i,j;if("STYLE"===b.nodeName)return[];e={selector:b,css:{}},i=$(b).attr("style").split(";");for(g=0,h=i.length;g<h;g++)d=i[g],j=d.split(":"),c=j[0],f=j[1],e.css[a.trim(c)]=a.trim(f);return e};return b}(),a.Suite=function(){function b(){}b.registry=[],b.defineTest=function(a){return this.registry.push(a)},b.prototype.createDocument=function(a){$("iframe").remove(),$('<iframe name="tokenizer" style="display:none;"></iframe>').appendTo(window.document.body),window.frames.tokenizer.document.write(a);return window.frames.tokenizer.document},b.prototype.execute=function(b,c,d){var e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z;d==null&&(d=0),b=b.replace(/<(?!\/)([^>]+)>/gi,function(a,b){return"<"+b+' data-node-id="'+d++ +'">'}),g=b.replace(/type="(text\/javascript)"/g,'type="text/disabled-javascript"'),e=this.createDocument(g),m=new a.Parser(e),v=this.constructor.registry;for(f=0,r=v.length;f<r;f++){n=v[f];if(a.intersection(n.clients,c).length){w=n.callback(e,m);for(o=0,s=w.length;o<s;o++){i=w[o];if(i.length)for(p=0,t=i.length;p<t;p++)h=i[p],j=$(h).attr("data-match-id")?$(h).attr("data-match-id")+" "+f:f,$(h).attr("data-match-id",j)}}}g=e.documentElement.innerHTML,x=g.match(/<[^>]+data-match-id="[^"]+"[^>]*>/gi);for(q=0,u=x.length;q<u;q++)h=x[q],h!=null&&(l=(y=h.match(/data-node-id="([^"]+)"/i))!=null?y[1]:void 0,k=(z=h.match(/data-match-id="([^"]+)"/i))!=null?z[1]:void 0,b=b.replace(new RegExp('data-node-id="'+l+'"'),'data-match-id="'+k+'"'));b=b.replace(/\sdata-node-id="[^"]+"/gi,""),b=b.replace(/<([^>]+?)\s?data-match-id="([^"]+)"([^>]*)>/gi,'{span class="match" data-match-id="$2"}<$1$3>{/span}'),b=jQuery("<div/>").text(b).html();return b=b.replace(new RegExp('{span class="match" data-match-id="([^"]+)"}(.+?){/span}',"g"),'<span class="match" data-match-id="$1">$2</span>')},b.prototype.getClients=function(){return this.constructor.clients};return b}(),a.EmailSuite=function(){function b(){b.__super__.constructor.apply(this,arguments)}d(b,a.Suite),b.clients={android_email:{name:"Android Email"},android_gmail:{name:"Android Gmail"},aol_10:{name:"AOL Desktop 10"},aol_web:{name:"AOL Web"},apple_iphone_3:{name:"Apple iPhone 3.0"},apple_mail:{name:"Apple Mail"},blackberry:{name:"Blackberry"},entourage_04:{name:"Entourage 2004"},entourage_08:{name:"Entourage 2008"},gmail:{name:"Google Gmail"},hotmail:{name:"Live Hotmail"},mobileme:{name:"MobileMe"},myspace:{name:"MySpace"},notes_7:{name:"Lotus Notes 6/7"},notes_8:{name:"Lotus Notes 8.5"},outlook_03:{name:"Outlook 2000/03"},outlook_07:{name:"Outlook 2007/10"},palm_garnet:{name:"Palm Garnet OS"},thunderbird_2:{name:"Thunderbird 2"},yahoo_classic:{name:"Yahoo! Classic"},yahoo_mail:{name:"Yahoo! Mail"},webos:{name:"WebOS"},windows_mail:{name:"Windows Mail"},win_mobile_65:{name:"Windows Mobile 6.5"}},b.defineTest({description:"Does not support 'font-family' CSS attribute",clients:["gmail","outlook_07"],callback:function(a,b){var c,d,e,f,g;f=b.findByProperty("font-family"),g=[];for(d=0,e=f.length;d<e;d++)c=f[d],g.push($(c.selector,a));return g}}),b.defineTest({description:"Does not support 'font-weight' CSS attribute",clients:["gmail","outlook_07"],callback:function(a,b){var c,d,e,f,g;f=b.findByProperty("font-weight"),g=[];for(d=0,e=f.length;d<e;d++)c=f[d],g.push($(c.selector,a));return g}});return b}();return a}.call(this)}).call(this)
+(function() {
+  var exports;
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  if (typeof exports === "undefined" || exports === null) {
+    exports = window;
+  }
+  exports.CssGuide = (function() {
+    function CssGuide() {}
+    CssGuide.intersection = function(a, b) {
+      var element, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = a.length; _i < _len; _i++) {
+        element = a[_i];
+        if (-1 < jQuery.inArray(element, b)) {
+          _results.push(element);
+        }
+      }
+      return _results;
+    };
+    CssGuide.trim = function(string) {
+      return string.replace(/^\s*/, "").replace(/\s*$/, "");
+    };
+    CssGuide.Controller = (function() {
+      function Controller(suite, form, table) {
+        var client, div, id, template, _ref;
+        this.suite = suite;
+        this.form = form;
+        this.table = table;
+        div = $("div:nth-child(2)", this.form);
+        template = $("[name='client[]']").closest("label").remove();
+        _ref = this.suite.getClients();
+        for (id in _ref) {
+          client = _ref[id];
+          div.append(template.clone().append(client.name).find("input").val(id).end());
+        }
+        $("[data-match-id]").live("mouseenter", function() {
+          var id, _i, _len, _ref2, _results;
+          _ref2 = $(this).attr("data-match-id").split(" ");
+          _results = [];
+          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+            id = _ref2[_i];
+            _results.push($("[data-match-id~='" + id + "']").addClass("highlight"));
+          }
+          return _results;
+        });
+        $("[data-match-id]").live("mouseleave", function() {
+          var id, _i, _len, _ref2, _results;
+          _ref2 = $(this).attr("data-match-id").split(" ");
+          _results = [];
+          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+            id = _ref2[_i];
+            _results.push($("[data-match-id~='" + id + "']").removeClass("highlight"));
+          }
+          return _results;
+        });
+        this.form.bind("submit", __bind(function(e) {
+          e.preventDefault();
+          return this.test($("textarea", this.form.markup).val(), this.getSelectedClients());
+        }, this));
+      }
+      Controller.prototype.test = function(input, clients) {
+        var index, line, _len, _ref;
+        this.table.html("");
+        input = this.suite.execute(input, clients);
+        _ref = input.split("\n");
+        for (index = 0, _len = _ref.length; index < _len; index++) {
+          line = _ref[index];
+          this.table.append("<tr>\n  <th>" + (index + 1) + "</th>\n  <td style=\"padding-left:" + (line.match(/^(\s*)/)[1].length) + "em\">" + line + "</td>\n</tr>");
+        }
+        return $("#results").show();
+      };
+      Controller.prototype.getSelectedClients = function() {
+        var el, _i, _len, _ref, _results;
+        _ref = $("[name='client[]']:checked", this.form);
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          el = _ref[_i];
+          _results.push(el.value);
+        }
+        return _results;
+      };
+      return Controller;
+    })();
+    CssGuide.Parser = (function() {
+      function Parser(dom) {
+        var node, _i, _j, _len, _len2, _ref, _ref2;
+        this.tokens = [];
+        _ref = $("style", dom);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          node = _ref[_i];
+          if ("" !== $(node).html()) {
+            this.tokens = this.tokens.concat(this.parse(node));
+          }
+        }
+        _ref2 = $("[style]", dom);
+        for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+          node = _ref2[_j];
+          if ("" !== $(node).attr("style")) {
+            this.tokens.push(this.parse(node));
+          }
+        }
+      }
+      Parser.prototype.findByProperty = function(property) {
+        var token, _i, _len, _ref, _results;
+        _ref = this.tokens;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          token = _ref[_i];
+          if (token.css[property] !== void 0) {
+            _results.push(token);
+          }
+        }
+        return _results;
+      };
+      Parser.prototype.parse = function(node) {
+        var css, definition, match, property, selector, style, token, tokens, value, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
+        if ("STYLE" === node.nodeName) {
+          tokens = [];
+          _ref = ($(node).html().match(/[^{]+{[^}]+}/gi)) || [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            definition = _ref[_i];
+            _ref2 = definition.match(/([^{]+){([^}]+)}/m), match = _ref2[0], selector = _ref2[1], css = _ref2[2];
+            token = {
+              selector: selector,
+              css: {}
+            };
+            _ref3 = css.split(";");
+            for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+              style = _ref3[_j];
+              _ref4 = style.split(":"), property = _ref4[0], value = _ref4[1];
+              if (property != null) {
+                token.css[CssGuide.trim(property)] = value != null ? CssGuide.trim(value) : "";
+              }
+            }
+            tokens.push(token);
+          }
+          return tokens;
+        } else {
+          token = {
+            selector: node,
+            css: {}
+          };
+          _ref5 = $(node).attr("style").split(";");
+          for (_k = 0, _len3 = _ref5.length; _k < _len3; _k++) {
+            style = _ref5[_k];
+            _ref6 = style.split(":"), property = _ref6[0], value = _ref6[1];
+            if (property != null) {
+              token.css[CssGuide.trim(property)] = value != null ? CssGuide.trim(value) : "";
+            }
+          }
+          return token;
+        }
+      };
+      return Parser;
+    })();
+    CssGuide.Suite = (function() {
+      function Suite() {}
+      Suite.registry = [];
+      Suite.defineTest = function(definition) {
+        return this.registry.push(definition);
+      };
+      Suite.prototype.createDocument = function(input) {
+        $("iframe").remove();
+        $('<iframe name="tokenizer" style="display:none;"></iframe>').appendTo(window.document.body);
+        if (!input.match(/<html[^>]*>/)) {
+          if (!input.match(/<body[^>]*>/)) {
+            input = "<body>" + input + "</body>";
+          }
+          input = "<html>" + input + "</html>";
+        }
+        window.frames.tokenizer.document.write(input);
+        return window.frames.tokenizer.document;
+      };
+      Suite.prototype.execute = function(input, clients, seed) {
+        var dom, id, markup, match, matches, meta, mid, nid, parser, test, _i, _j, _k, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _ref4, _ref5;
+        if (seed == null) {
+          seed = 0;
+        }
+        input = input.replace(/<(?!\/)([^>]+)>/gi, function(all, match) {
+          return '<' + match + ' data-node-id="' + (seed++) + '">';
+        });
+        markup = input.replace(/type="(text\/javascript)"/g, 'type="text/disabled-javascript"');
+        dom = this.createDocument(markup);
+        parser = new CssGuide.Parser(dom);
+        _ref = this.constructor.registry;
+        for (id = 0, _len = _ref.length; id < _len; id++) {
+          test = _ref[id];
+          if (CssGuide.intersection(test.clients, clients).length) {
+            _ref2 = test.callback(dom, parser);
+            for (_i = 0, _len2 = _ref2.length; _i < _len2; _i++) {
+              matches = _ref2[_i];
+              if (matches.length) {
+                for (_j = 0, _len3 = matches.length; _j < _len3; _j++) {
+                  match = matches[_j];
+                  meta = $(match).attr('data-match-id') ? $(match).attr('data-match-id') + ' ' + id : id;
+                  $(match).attr('data-match-id', meta);
+                }
+              }
+            }
+          }
+        }
+        markup = dom.documentElement.innerHTML;
+        _ref3 = (markup.match(/<[^>]+data-match-id="[^"]+"[^>]*>/gi)) || [];
+        for (_k = 0, _len4 = _ref3.length; _k < _len4; _k++) {
+          match = _ref3[_k];
+          if (match != null) {
+            nid = (_ref4 = match.match(/data-node-id="([^"]+)"/i)) != null ? _ref4[1] : void 0;
+            mid = (_ref5 = match.match(/data-match-id="([^"]+)"/i)) != null ? _ref5[1] : void 0;
+            input = input.replace(new RegExp('data-node-id="' + nid + '"'), 'data-match-id="' + mid + '"');
+          }
+        }
+        input = input.replace(/\sdata-node-id="[^"]+"/gi, "");
+        input = input.replace(/<([^>]+?)\s?data-match-id="([^"]+)"([^>]*)>/gi, '{span class="match" data-match-id="$2"}<$1$3>{/span}');
+        input = jQuery("<div/>").text(input).html();
+        return input = input.replace(new RegExp('{span class="match" data-match-id="([^"]+)"}(.+?){\/span}', "g"), '<span class="match" data-match-id="$1">$2</span>');
+      };
+      Suite.prototype.getClients = function() {
+        return this.constructor.clients;
+      };
+      return Suite;
+    })();
+    CssGuide.EmailSuite = (function() {
+      __extends(EmailSuite, CssGuide.Suite);
+      function EmailSuite() {
+        EmailSuite.__super__.constructor.apply(this, arguments);
+      }
+      EmailSuite.clients = {
+        android_email: {
+          name: "Android Email"
+        },
+        android_gmail: {
+          name: "Android Gmail"
+        },
+        aol_10: {
+          name: "AOL Desktop 10"
+        },
+        aol_web: {
+          name: "AOL Web"
+        },
+        apple_iphone_3: {
+          name: "Apple iPhone 3.0"
+        },
+        apple_mail: {
+          name: "Apple Mail"
+        },
+        blackberry: {
+          name: "Blackberry"
+        },
+        entourage_04: {
+          name: "Entourage 2004"
+        },
+        entourage_08: {
+          name: "Entourage 2008"
+        },
+        gmail: {
+          name: "Google Gmail"
+        },
+        hotmail: {
+          name: "Live Hotmail"
+        },
+        mobileme: {
+          name: "MobileMe"
+        },
+        myspace: {
+          name: "MySpace"
+        },
+        notes_7: {
+          name: "Lotus Notes 6/7"
+        },
+        notes_8: {
+          name: "Lotus Notes 8.5"
+        },
+        outlook_03: {
+          name: "Outlook 2000/03"
+        },
+        outlook_07: {
+          name: "Outlook 2007/10"
+        },
+        palm_garnet: {
+          name: "Palm Garnet OS"
+        },
+        thunderbird_2: {
+          name: "Thunderbird 2"
+        },
+        yahoo_classic: {
+          name: "Yahoo! Classic"
+        },
+        yahoo_mail: {
+          name: "Yahoo! Mail"
+        },
+        webos: {
+          name: "WebOS"
+        },
+        windows_mail: {
+          name: "Windows Mail"
+        },
+        win_mobile_65: {
+          name: "Windows Mobile 6.5"
+        }
+      };
+      EmailSuite.defineTest({
+        description: "Does not support 'font-family' CSS attribute",
+        clients: ["gmail", "outlook_07"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("font-family");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'font-weight' CSS attribute",
+        clients: ["gmail", "outlook_07"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("font-weight");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      return EmailSuite;
+    })();
+    return CssGuide;
+  }).call(this);
+}).call(this);
