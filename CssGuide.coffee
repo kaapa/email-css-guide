@@ -59,9 +59,10 @@ class exports.CssGuide
   # Parser parses document's CSS definitions into tokens
   #
   class CssGuide.Parser
-    constructor: (document) ->
-      # An array of token objects. Each token stores every CSS rule that applies 
-      # for a single selector.
+    constructor: (dom) ->
+      # An array of token objects. A token contains a selector which can be
+      # either a HTMLElement object or a string CSS selector. Besides selector
+      # it also contains all the CSS rules for that selector.
       #
       # Structure:
       # 
@@ -71,10 +72,10 @@ class exports.CssGuide
       # }
       @tokens = []
       # Tokenize style element CSS
-      for node in $("style", document) when "" != $(node).html()
+      for node in $("style", dom) when "" != $(node).html()
         @tokens = @tokens.concat @parse node
       # Tokenize inline CSS
-      for node in $("[style]", document) when "" != $(node).attr "style"
+      for node in $("[style]", dom) when "" != $(node).attr "style"
         @tokens.push @parse node
 
     # Find a token by name of a CSS property
@@ -100,7 +101,8 @@ class exports.CssGuide
         token = { selector: node, css: {} }      
         for style in $(node).attr("style").split(";")
           [property, value] = style.split(":")
-          token.css[CssGuide.trim property] = CssGuide.trim value
+          if property?
+            token.css[CssGuide.trim property] = if value? then CssGuide.trim value else ""
         token
 
   class CssGuide.Suite
@@ -123,6 +125,12 @@ class exports.CssGuide
     createDocument: (input) ->
         $("iframe").remove();
         $('<iframe name="tokenizer" style="display:none;"></iframe>').appendTo(window.document.body);
+
+        unless input.match /<html[^>]*>/
+          unless input.match /<body[^>]*>/
+            input = "<body>#{input}</body>"
+          input = "<html>#{input}</html>"
+
         window.frames.tokenizer.document.write input
         window.frames.tokenizer.document
 
@@ -156,7 +164,7 @@ class exports.CssGuide
       # source code using data-node-id as identifier in the pairing. 
       # Using the original input quarantees preserved formatting (line-endings and
       # indentation)
-      for match in markup.match /<[^>]+data-match-id="[^"]+"[^>]*>/gi when match?
+      for match in (markup.match /<[^>]+data-match-id="[^"]+"[^>]*>/gi) || [] when match?
         nid = match.match(/data-node-id="([^"]+)"/i)?[1]
         mid = match.match(/data-match-id="([^"]+)"/i)?[1]        
         input = input.replace(
@@ -240,13 +248,13 @@ class exports.CssGuide
     @defineTest
       description: "Does not support 'font-family' CSS attribute"
       clients: [ "gmail", "outlook_07" ]
-      callback: (document, parser) ->
+      callback: (dom, parser) ->
         for token in parser.findByProperty("font-family")
-          $(token.selector, document)
+          $(token.selector, dom)
 
     @defineTest
       description: "Does not support 'font-weight' CSS attribute"
       clients: [ "gmail", "outlook_07" ]
-      callback: (document, parser) ->
+      callback: (dom, parser) ->
         for token in parser.findByProperty("font-weight")
-          $(token.selector, document)
+          $(token.selector, dom)
