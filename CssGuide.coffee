@@ -88,8 +88,12 @@ class exports.CssGuide
         @tokens.push @parse node
 
     # Find a token by name of a CSS property
-    findByProperty: (property) ->
-      token for token in @tokens when token.css[property] != undefined
+    findByProperty: (properties...) ->
+      tokens = []
+      for property in properties
+        for token in @tokens when token.css[property] != undefined
+          tokens.push token
+      tokens
 
     findBySelector: (selector) ->
       selector = new RegExp("\b#{ selector }\b") unless selector instanceof RegExp
@@ -273,32 +277,78 @@ class exports.CssGuide
       win_mobile_65:
         name: "Windows Mobile 6.5"
 
+    # HTML elements #
+
     @defineTest
       description: "Does not support <style> element within <head>"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "android_gmail", "blackberry", "gmail", "myspace", "notes_7", "palm_garnet" ]
       callback: (dom, parser) ->
         $("head style", dom)
 
     @defineTest
       description: "Does not support <style> element within <body>"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "palm_garnet" ]
       callback: (dom, parser) ->
         $("body style", dom)
 
     @defineTest
       description: "Does not support <link> element within <head>"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "android_gmail", "blackberry", "gmail", "myspace", "palm_garnet" ]
       callback: (dom, parser) ->
         $("head link", dom)
 
     @defineTest
       description: "Does not support <link> element within <body>"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "palm_garnet" ]
       callback: (dom, parser) ->
         $("body link", dom)
 
     @defineTest
+      description: "Does not support <frameset> element"
+      source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx"
+      clients: [ "outlook_07" ]
+      callback: (dom, parser) ->
+        $("frameset", dom)
+
+    @defineTest
+      description: "Does not support <frame> element"
+      source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx"
+      clients: [ "outlook_07" ]
+      callback: (dom, parser) ->
+        $("frame", dom)
+
+    # HTML attributes #
+
+    @defineTest
+      description: "Does not support 'cols' attribute on <textarea> elements"
+      source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx"
+      clients: [ "outlook_07" ]
+      callback: (dom, parser) ->
+        $("textarea[cols]", dom)
+
+    @defineTest
+      description: "Does not support 'colspan' attribute on table cells"
+      source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx"
+      clients: [ "outlook_07" ]
+      callback: (dom, parser) ->
+        $("td[colspan], th[colspan]", dom)
+
+    @defineTest
+      description: "Does not support 'rowspan' attribute on table cells"
+      source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx"
+      clients: [ "outlook_07" ]
+      callback: (dom, parser) ->
+        $("td[rowspan], th[rowspan]", dom)
+
+    # CSS selectors #
+
+    @defineTest
       description: "Does not support 'element' CSS selector"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "android_gmail", "blackberry", "gmail", "myspace", "notes_7", "webos", "win_mobile_65" ]
       callback: (dom, parser) ->
         selectors = parser.findBySelector /\b[a-z1-9]\b/i
@@ -306,6 +356,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support '*' CSS selector"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "outlook_07", "webos", "yahoo_classic", "win_mobile_65" ]
       callback: (dom, parser) ->
         selectors = parser.findBySelector /\*/
@@ -313,6 +364,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support '.class' CSS selector"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "android_gmail", "gmail", "myspace", "notes_7" ]
       callback: (dom, parser) ->
         selectors = parser.findBySelector /\./
@@ -320,6 +372,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support '#id' CSS selector"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "android_gmail", "gmail", "hotmail", "mobileme", "myspace", "notes_7" ]
       callback: (dom, parser) ->
         selectors = parser.findBySelector  /#/
@@ -327,6 +380,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support ':link' CSS selector"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "palm_garnet" ]
       callback: (dom, parser) ->
         selectors = parser.findBySelector /:link/
@@ -334,6 +388,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support ':active' or ':hover' CSS selector"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "android_gmail", "aol_web", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "outlook_07", "palm_garnet" ]
       callback: (dom, parser) ->
         selectors = parser.findBySelector /:active|:hover/
@@ -341,6 +396,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support ':first-line' CSS selector"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "android_gmail", "aol_web", "blackberry", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "outlook_07", "palm_garnet", "win_mobile_65", "yahoo_mail" ]
       callback: (dom, parser) ->
         selectors = parser.findBySelector /:first-line/
@@ -348,6 +404,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support ':first-letter' CSS selector"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "android_gmail", "aol_web", "blackberry", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "outlook_07", "palm_garnet", "win_mobile_65", "yahoo_mail" ]
       callback: (dom, parser) ->
         selectors = parser.findBySelector /:first-letter/
@@ -355,6 +412,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support '>' CSS selector"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "android_gmail", "aol_10", "blackberry", "gmail", "hotmail", "apple_iphone_3", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "webos", "win_mobile_65", "windows_mail" ]
       callback: (dom, parser) ->
         selectors = parser.findBySelector />/
@@ -362,6 +420,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support ':focus' CSS selector"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "android_gmail", "aol_10", "blackberry", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "win_mobile_65", "windows_mail" ]
       callback: (dom, parser) ->
         selectors = parser.findBySelector /:focus/
@@ -369,6 +428,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support '+' CSS selector"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "android_gmail", "aol_10", "blackberry", "entourage_04", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "windows_mail", "yahoo_classic", "yahoo_mail" ]
       callback: (dom, parser) ->
         selectors = parser.findBySelector /\+/
@@ -376,13 +436,17 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support '[attribute]' CSS selector"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "android_gmail", "aol_10", "blackberry", "entourage_04", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "windows_mail" ]
       callback: (dom, parser) ->
         selectors = parser.findBySelector /\[/
         $(selectors.join(", "), dom) if selectors.length > 0
 
+    # CSS properties #
+
     @defineTest
       description: "Does not support 'direction' CSS property"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "android_gmail", "entourage_04", "gmail", "notes_7", "outlook_07" ]
       callback: (dom, parser) ->
         for token in parser.findByProperty("direction")
@@ -390,6 +454,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support 'font' CSS property"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "blackberry", "notes_7", "palm_garnet" ]
       callback: (dom, parser) ->
         for token in parser.findByProperty("font")
@@ -397,6 +462,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support 'font-family' CSS property"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "blackberry", "palm_garnet", "win_mobile_65" ]
       callback: (dom, parser) ->
         for token in parser.findByProperty("font-family")
@@ -404,6 +470,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support 'font-style' CSS property"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "palm_garnet" ]
       callback: (dom, parser) ->
         for token in parser.findByProperty("font-style")
@@ -411,6 +478,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support 'font-variant' CSS property"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "blackberry", "notes_7", "palm_garnet" ]
       callback: (dom, parser) ->
         for token in parser.findByProperty("font-variant")
@@ -418,13 +486,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support 'font-size' CSS property"
-      clients: [ "blackberry" ]
-      callback: (dom, parser) ->
-        for token in parser.findByProperty("font-size")
-          $(token.selector, dom)
-
-    @defineTest
-      description: "Does not support 'font-size' CSS property"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "blackberry" ]
       callback: (dom, parser) ->
         for token in parser.findByProperty("font-size")
@@ -432,6 +494,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support 'letter-spacing' CSS property"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "blackberry", "notes_7", "palm_garnet", "win_mobile_65" ]
       callback: (dom, parser) ->
         for token in parser.findByProperty("letter-spacing")
@@ -439,13 +502,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support 'line-height' CSS property"
-      clients: [ "blackberry", "myspace", "notes_7", "palm_garnet" ]
-      callback: (dom, parser) ->
-        for token in parser.findByProperty("line-height")
-          $(token.selector, dom)
-
-    @defineTest
-      description: "Does not support 'line-height' CSS property"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "blackberry", "myspace", "notes_7", "palm_garnet" ]
       callback: (dom, parser) ->
         for token in parser.findByProperty("line-height")
@@ -453,6 +510,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support 'text-indent' CSS property"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "blackberry", "notes_7" ]
       callback: (dom, parser) ->
         for token in parser.findByProperty("text-indent")
@@ -460,6 +518,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support 'text-overflow' CSS property"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "blackberry", "entourage_04", "myspace", "notes_7", "outlook_07", "palm_garnet", "thunderbird_2", "yahoo_classic", "yahoo_mail" ]
       callback: (dom, parser) ->
         for token in parser.findByProperty("text-overflow")
@@ -467,6 +526,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support 'text-shadow' CSS property"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "aol_10", "aol_web", "blackberry", "entourage_04", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "thunderbird_2", "webos", "windows_mail", "win_mobile_65" ]
       callback: (dom, parser) ->
         for token in parser.findByProperty("text-shadow")
@@ -474,6 +534,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support 'text-transform' CSS property"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "notes_7", "palm_garnet" ]
       callback: (dom, parser) ->
         for token in parser.findByProperty("text-transform")
@@ -481,6 +542,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support 'white-space' CSS property"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "aol_10", "aol_web", "blackberry", "notes_7", "notes_8", "outlook_03", "palm_garnet", "windows_mail", "win_mobile_65" ]
       callback: (dom, parser) ->
         for token in parser.findByProperty("white-space")
@@ -488,6 +550,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support 'word-spacing' CSS property"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "blackberry", "notes_7", "outlook_07", "palm_garnet", "win_mobile_65" ]
       callback: (dom, parser) ->
         for token in parser.findByProperty("word-spacing")
@@ -495,6 +558,7 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support 'word-wrap' CSS property"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "android_gmail", "blackberry", "gmail", "hotmail", "entourage_04", "myspace", "notes_7", "outlook_07", "palm_garnet", "thunderbird_2", "win_mobile_65" ]
       callback: (dom, parser) ->
         for token in parser.findByProperty("word-wrap")
@@ -502,7 +566,16 @@ class exports.CssGuide
 
     @defineTest
       description: "Does not support 'vertical-align' CSS property"
+      source: "http://www.campaignmonitor.com/css/"
       clients: [ "blackberry", "android_email", "notes_7", "outlook_07" ]
       callback: (dom, parser) ->
         for token in parser.findByProperty("vertical-align")
           $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support 'padding' CSS property on <div> and <p> elements"
+      source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx"
+      clients: [ "outlook_07" ]
+      callback: (dom, parser) ->
+        for token in parser.findByProperty("padding", "padding-top", "padding-right", "padding-bottom", "padding-left")
+          $(token.selector, dom).filter "p, div"

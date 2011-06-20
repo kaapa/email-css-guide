@@ -1,6 +1,6 @@
 (function() {
   var exports;
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
     ctor.prototype = parent.prototype;
@@ -116,17 +116,21 @@
           }
         }
       }
-      Parser.prototype.findByProperty = function(property) {
-        var token, _i, _len, _ref, _results;
-        _ref = this.tokens;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          token = _ref[_i];
-          if (token.css[property] !== void 0) {
-            _results.push(token);
+      Parser.prototype.findByProperty = function() {
+        var properties, property, token, tokens, _i, _j, _len, _len2, _ref;
+        properties = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+        tokens = [];
+        for (_i = 0, _len = properties.length; _i < _len; _i++) {
+          property = properties[_i];
+          _ref = this.tokens;
+          for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
+            token = _ref[_j];
+            if (token.css[property] !== void 0) {
+              tokens.push(token);
+            }
           }
         }
-        return _results;
+        return tokens;
       };
       Parser.prototype.findBySelector = function(selector) {
         var token, _i, _len, _ref, _results;
@@ -346,6 +350,7 @@
       };
       EmailSuite.defineTest({
         description: "Does not support <style> element within <head>",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "blackberry", "gmail", "myspace", "notes_7", "palm_garnet"],
         callback: function(dom, parser) {
           return $("head style", dom);
@@ -353,6 +358,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support <style> element within <body>",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "palm_garnet"],
         callback: function(dom, parser) {
           return $("body style", dom);
@@ -360,6 +366,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support <link> element within <head>",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "blackberry", "gmail", "myspace", "palm_garnet"],
         callback: function(dom, parser) {
           return $("head link", dom);
@@ -367,13 +374,55 @@
       });
       EmailSuite.defineTest({
         description: "Does not support <link> element within <body>",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "palm_garnet"],
         callback: function(dom, parser) {
           return $("body link", dom);
         }
       });
       EmailSuite.defineTest({
+        description: "Does not support <frameset> element",
+        source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx",
+        clients: ["outlook_07"],
+        callback: function(dom, parser) {
+          return $("frameset", dom);
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support <frame> element",
+        source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx",
+        clients: ["outlook_07"],
+        callback: function(dom, parser) {
+          return $("frame", dom);
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'cols' attribute on <textarea> elements",
+        source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx",
+        clients: ["outlook_07"],
+        callback: function(dom, parser) {
+          return $("textarea[cols]", dom);
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'colspan' attribute on table cells",
+        source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx",
+        clients: ["outlook_07"],
+        callback: function(dom, parser) {
+          return $("td[colspan], th[colspan]", dom);
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'rowspan' attribute on table cells",
+        source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx",
+        clients: ["outlook_07"],
+        callback: function(dom, parser) {
+          return $("td[rowspan], th[rowspan]", dom);
+        }
+      });
+      EmailSuite.defineTest({
         description: "Does not support 'element' CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "blackberry", "gmail", "myspace", "notes_7", "webos", "win_mobile_65"],
         callback: function(dom, parser) {
           var selectors;
@@ -385,6 +434,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support '*' CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "outlook_07", "webos", "yahoo_classic", "win_mobile_65"],
         callback: function(dom, parser) {
           var selectors;
@@ -396,6 +446,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support '.class' CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "gmail", "myspace", "notes_7"],
         callback: function(dom, parser) {
           var selectors;
@@ -407,6 +458,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support '#id' CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "gmail", "hotmail", "mobileme", "myspace", "notes_7"],
         callback: function(dom, parser) {
           var selectors;
@@ -418,6 +470,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support ':link' CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "palm_garnet"],
         callback: function(dom, parser) {
           var selectors;
@@ -429,6 +482,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support ':active' or ':hover' CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "aol_web", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "outlook_07", "palm_garnet"],
         callback: function(dom, parser) {
           var selectors;
@@ -440,6 +494,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support ':first-line' CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "aol_web", "blackberry", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "outlook_07", "palm_garnet", "win_mobile_65", "yahoo_mail"],
         callback: function(dom, parser) {
           var selectors;
@@ -451,6 +506,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support ':first-letter' CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "aol_web", "blackberry", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "outlook_07", "palm_garnet", "win_mobile_65", "yahoo_mail"],
         callback: function(dom, parser) {
           var selectors;
@@ -462,6 +518,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support '>' CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "aol_10", "blackberry", "gmail", "hotmail", "apple_iphone_3", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "webos", "win_mobile_65", "windows_mail"],
         callback: function(dom, parser) {
           var selectors;
@@ -473,6 +530,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support ':focus' CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "aol_10", "blackberry", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "win_mobile_65", "windows_mail"],
         callback: function(dom, parser) {
           var selectors;
@@ -484,6 +542,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support '+' CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "aol_10", "blackberry", "entourage_04", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "windows_mail", "yahoo_classic", "yahoo_mail"],
         callback: function(dom, parser) {
           var selectors;
@@ -495,6 +554,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support '[attribute]' CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "aol_10", "blackberry", "entourage_04", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "windows_mail"],
         callback: function(dom, parser) {
           var selectors;
@@ -506,6 +566,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support 'direction' CSS property",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "entourage_04", "gmail", "notes_7", "outlook_07"],
         callback: function(dom, parser) {
           var token, _i, _len, _ref, _results;
@@ -520,6 +581,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support 'font' CSS property",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry", "notes_7", "palm_garnet"],
         callback: function(dom, parser) {
           var token, _i, _len, _ref, _results;
@@ -534,6 +596,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support 'font-family' CSS property",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry", "palm_garnet", "win_mobile_65"],
         callback: function(dom, parser) {
           var token, _i, _len, _ref, _results;
@@ -548,6 +611,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support 'font-style' CSS property",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["palm_garnet"],
         callback: function(dom, parser) {
           var token, _i, _len, _ref, _results;
@@ -562,6 +626,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support 'font-variant' CSS property",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry", "notes_7", "palm_garnet"],
         callback: function(dom, parser) {
           var token, _i, _len, _ref, _results;
@@ -576,20 +641,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support 'font-size' CSS property",
-        clients: ["blackberry"],
-        callback: function(dom, parser) {
-          var token, _i, _len, _ref, _results;
-          _ref = parser.findByProperty("font-size");
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            token = _ref[_i];
-            _results.push($(token.selector, dom));
-          }
-          return _results;
-        }
-      });
-      EmailSuite.defineTest({
-        description: "Does not support 'font-size' CSS property",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry"],
         callback: function(dom, parser) {
           var token, _i, _len, _ref, _results;
@@ -604,6 +656,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support 'letter-spacing' CSS property",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry", "notes_7", "palm_garnet", "win_mobile_65"],
         callback: function(dom, parser) {
           var token, _i, _len, _ref, _results;
@@ -618,20 +671,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support 'line-height' CSS property",
-        clients: ["blackberry", "myspace", "notes_7", "palm_garnet"],
-        callback: function(dom, parser) {
-          var token, _i, _len, _ref, _results;
-          _ref = parser.findByProperty("line-height");
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            token = _ref[_i];
-            _results.push($(token.selector, dom));
-          }
-          return _results;
-        }
-      });
-      EmailSuite.defineTest({
-        description: "Does not support 'line-height' CSS property",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry", "myspace", "notes_7", "palm_garnet"],
         callback: function(dom, parser) {
           var token, _i, _len, _ref, _results;
@@ -646,6 +686,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support 'text-indent' CSS property",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry", "notes_7"],
         callback: function(dom, parser) {
           var token, _i, _len, _ref, _results;
@@ -660,6 +701,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support 'text-overflow' CSS property",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry", "entourage_04", "myspace", "notes_7", "outlook_07", "palm_garnet", "thunderbird_2", "yahoo_classic", "yahoo_mail"],
         callback: function(dom, parser) {
           var token, _i, _len, _ref, _results;
@@ -674,6 +716,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support 'text-shadow' CSS property",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["aol_10", "aol_web", "blackberry", "entourage_04", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "thunderbird_2", "webos", "windows_mail", "win_mobile_65"],
         callback: function(dom, parser) {
           var token, _i, _len, _ref, _results;
@@ -688,6 +731,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support 'text-transform' CSS property",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["notes_7", "palm_garnet"],
         callback: function(dom, parser) {
           var token, _i, _len, _ref, _results;
@@ -702,6 +746,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support 'white-space' CSS property",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["aol_10", "aol_web", "blackberry", "notes_7", "notes_8", "outlook_03", "palm_garnet", "windows_mail", "win_mobile_65"],
         callback: function(dom, parser) {
           var token, _i, _len, _ref, _results;
@@ -716,6 +761,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support 'word-spacing' CSS property",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry", "notes_7", "outlook_07", "palm_garnet", "win_mobile_65"],
         callback: function(dom, parser) {
           var token, _i, _len, _ref, _results;
@@ -730,6 +776,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support 'word-wrap' CSS property",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "blackberry", "gmail", "hotmail", "entourage_04", "myspace", "notes_7", "outlook_07", "palm_garnet", "thunderbird_2", "win_mobile_65"],
         callback: function(dom, parser) {
           var token, _i, _len, _ref, _results;
@@ -744,6 +791,7 @@
       });
       EmailSuite.defineTest({
         description: "Does not support 'vertical-align' CSS property",
+        source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry", "android_email", "notes_7", "outlook_07"],
         callback: function(dom, parser) {
           var token, _i, _len, _ref, _results;
@@ -752,6 +800,21 @@
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             token = _ref[_i];
             _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support 'padding' CSS property on <div> and <p> elements",
+        source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx",
+        clients: ["outlook_07"],
+        callback: function(dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("padding", "padding-top", "padding-right", "padding-bottom", "padding-left");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom).filter("p, div"));
           }
           return _results;
         }
