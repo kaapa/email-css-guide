@@ -19,7 +19,7 @@ class exports.CssGuide
       div = $("div:nth-child(2)", @form)      
       template = $("[name='client[]']").closest("label").remove()
       for id, client of @suite.getClients()
-        div.append template.clone().append(client.name).find("input").val(id).end()
+        div.append template.clone().append(client.name).find("input").attr("checked", client.share?).val(id).end()
 
       $("[data-match-id]").live "mouseenter", (e) =>
         description = []
@@ -219,12 +219,15 @@ class exports.CssGuide
         name: "Android Gmail"
       aol_10:
         name: "AOL Desktop 10"
+        share: 0.012
       aol_web:
         name: "AOL Web"
       apple_iphone_3:
         name: "Apple iPhone 3.0"
+        share: 0.04
       apple_mail:
         name: "Apple Mail"
+        share: 0.04
       blackberry:
         name: "Blackberry"
       entourage_04:
@@ -233,32 +236,40 @@ class exports.CssGuide
         name: "Entourage 2008"
       gmail:
         name: "Google Gmail"
+        share: 0.05
       hotmail:
         name: "Live Hotmail"
+        share: 0.17
       mobileme:
         name: "MobileMe"
       myspace:
         name: "MySpace"
       notes_7:
         name: "Lotus Notes 6/7"
+        share: 0.004
       notes_8:
         name: "Lotus Notes 8.5"
       outlook_03:
         name: "Outlook 2000/03"
+        share: 0.34
       outlook_07:
         name: "Outlook 2007/10"
+        share: 0.9
       palm_garnet:
         name: "Palm Garnet OS"
       thunderbird_2:
         name: "Thunderbird 2"
+        share: 0.024
       yahoo_classic:
         name: "Yahoo! Classic"
       yahoo_mail:
         name: "Yahoo! Mail"
+        share: 0.13
       webos:
         name: "WebOS"
       windows_mail:
         name: "Windows Mail"
+        share: 0.02
       win_mobile_65:
         name: "Windows Mobile 6.5"
 
