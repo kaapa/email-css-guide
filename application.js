@@ -41,25 +41,27 @@
           client = _ref[id];
           div.append(template.clone().append(client.name).find("input").attr("checked", client.share != null).val(id).end());
         }
+        this.tooltipTemplate = this.tooltip.find("li").remove();
         $("[data-match-id]").live("mouseenter", __bind(function(e) {
-          var description, id, position, _i, _len, _ref2;
-          description = [];
+          var clientHtml, id, position, test, _i, _len, _ref2;
           position = $(e.target).position();
           _ref2 = $(e.target).attr("data-match-id").split(" ");
           for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
             id = _ref2[_i];
-            description.push(this.suite.getTest(id).description);
+            test = this.suite.getTest(id);
+            clientHtml = this.getTooltipClientHtml(test);
+            this.tooltip.append(this.tooltipTemplate.clone().find(".clients").html(clientHtml).end().find(".description").text(test.description).end());
             $("[data-match-id~='" + id + "']").addClass("highlight");
           }
-          this.tooltip.text(description.join("\n\n"));
           return this.tooltip.css({
             display: "block",
-            top: "" + (position.top + 5) + "px",
+            top: "" + (position.top + 20) + "px",
             left: position.left
           });
         }, this));
         $("[data-match-id]").live("mouseleave", __bind(function(e) {
           var id, _i, _len, _ref2, _results;
+          this.tooltip.html("");
           this.tooltip.css("display", "none");
           _ref2 = $(e.target).attr("data-match-id").split(" ");
           _results = [];
@@ -74,6 +76,24 @@
           return this.test($("textarea", this.form.markup).val(), this.getSelectedClients());
         }, this));
       }
+      Controller.prototype.getTooltipClientHtml = function(test) {
+        var client, html, names;
+        names = (function() {
+          var _i, _len, _ref, _results;
+          _ref = test.clients;
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            client = _ref[_i];
+            _results.push(this.suite.getClient(client).name);
+          }
+          return _results;
+        }).call(this);
+        html = names.slice(0, 3).join(", ");
+        if (names.length > 3) {
+          html += " and <span title=\"" + (names.slice(3).join(", ")) + "\">" + (names.length - 3) + " other clients</span>";
+        }
+        return html;
+      };
       Controller.prototype.test = function(input, clients) {
         var index, line, _len, _ref;
         this.table.html("");
@@ -235,6 +255,9 @@
         input = input.replace(/<([^>]+?)\s?data-match-id="([^"]+)"([^>]*)>/gi, '{span class="match" data-match-id="$2"}<$1$3>{/span}');
         input = jQuery("<div/>").text(input).html();
         return input = input.replace(new RegExp('{span class="match" data-match-id="([^"]+)"}(.+?){\/span}', "g"), '<span class="match" data-match-id="$1">$2</span>');
+      };
+      Suite.prototype.getClient = function(id) {
+        return this.constructor.clients[id];
       };
       Suite.prototype.getClients = function() {
         return this.constructor.clients;

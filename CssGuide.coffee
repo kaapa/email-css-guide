@@ -21,19 +21,27 @@ class exports.CssGuide
       for id, client of @suite.getClients()
         div.append template.clone().append(client.name).find("input").attr("checked", client.share?).val(id).end()
 
+      @tooltipTemplate = @tooltip.find("li").remove()
+
       $("[data-match-id]").live "mouseenter", (e) =>
-        description = []
         position = $(e.target).position()
         for id in $(e.target).attr("data-match-id").split(" ")
-          description.push @suite.getTest(id).description
+          test = @suite.getTest(id)
+          clientHtml = @getTooltipClientHtml test
+          @tooltip.append(
+            @tooltipTemplate
+              .clone()
+              .find(".clients").html(clientHtml).end()
+              .find(".description").text(test.description).end()
+          )
           $("[data-match-id~='#{ id }']").addClass("highlight")
-        @tooltip.text description.join("\n\n")
         @tooltip.css
           display: "block"
-          top: "#{position.top + 5}px",
+          top: "#{position.top + 20}px",
           left: position.left
 
       $("[data-match-id]").live "mouseleave", (e) =>
+        @tooltip.html ""
         @tooltip.css "display", "none"
         for id in $(e.target).attr("data-match-id").split(" ")
           $("[data-match-id~='#{ id }']").removeClass("highlight")
@@ -41,6 +49,13 @@ class exports.CssGuide
       @form.bind "submit", (e) =>
         e.preventDefault()
         @test $("textarea", @form.markup).val(), @getSelectedClients()
+
+    getTooltipClientHtml: (test) ->
+      names = (@suite.getClient(client).name for client in test.clients)
+      html = names[0..2].join ", "
+      if names.length > 3
+        html += " and <span title=\"#{ names[3..-1].join ", " }\">#{ names.length - 3 } other clients</span>"
+      html
 
     test: (input, clients) ->
       # Clear the results table from any previous output
@@ -201,6 +216,9 @@ class exports.CssGuide
         new RegExp('{span class="match" data-match-id="([^"]+)"}(.+?){\/span}', "g"),
         '<span class="match" data-match-id="$1">$2</span>'
       )
+
+    getClient: (id) ->
+      @constructor.clients[id]
 
     getClients: ->
       @constructor.clients
