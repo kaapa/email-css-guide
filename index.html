@@ -3,11 +3,82 @@
 <head>
   <title>Email CSS Guide</title>
   <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-  <script src="application.js"></script>
+  <script src="js/jquery-1.6.1.min.js"></script>
+  <script src="js/jquery.tmpl.min.js"></script>
+  <script src="js/application.js"></script>
   <script type="text/javascript">
   jQuery(document).ready(function($){
-    new CssGuide.Controller(new CssGuide.EmailSuite, $("form"), $("table"), $(".tooltip"))
+    var suite = new CssGuide.EmailSuite($);
+
+    $("#client").tmpl(suite.getClients()).appendTo("#clients");
+
+    $("form").bind("submit", function(e) {
+        
+        e.preventDefault();
+
+        $("#source").empty();
+
+        var output = suite.execute(
+          $("[name='markup']").val(), 
+          $("[name='client[]']:checked").val()
+        );
+
+        var rows = output.split("\n"),
+            lines = [];
+
+        for (var i in rows) {
+
+          lines.push({
+            number: parseInt(i) + 1,
+            content: rows[i],
+            indentation: rows[i].match(/^(\s*)/)[1].length
+          });
+        }
+
+        $("#line").tmpl(lines).appendTo($("#source"));
+
+        $("#results").show();
+    });
+
+    $("[data-match-id]").live("mouseenter", function(e) {
+      
+      $("#popup").empty();
+      
+      var failures = [],
+          matches = $(e.target).attr("data-match-id").split(" "),
+          position = $(e.target).position();
+      
+      for (var i in matches) {
+
+        var test = suite.getTest(matches[i]);
+
+        failures.push({
+          clientsAsHtml: suite.getClientsForTestAsHtml(test),
+          description: test.description          
+        });
+
+        $("[data-match-id~='" + matches[i] + "']").addClass("highlight");
+      }
+
+      $("#issue").tmpl(failures).appendTo("#popup");
+
+      $("#popup").css({
+        display: "block",
+        top: position.top + 20 +"px",
+        left: position.left
+      });
+    });
+
+    $("[data-match-id]").live("mouseleave", function(e) {
+      
+      $("#popup").empty().css("display", "none");
+      
+      var matches = $(e.target).attr("data-match-id").split(" ");
+
+      for (var i in matches) {
+        $("[data-match-id~='" + matches[i] + "']").removeClass("highlight");
+      }
+    });
   });
   </script>
   <style type="text/css" media="screen">
@@ -38,6 +109,7 @@
       height: 20em;
     }
     table {
+      width: auto;
       border-collapse: collapse;
     }
     th {
@@ -60,7 +132,7 @@
       background-color: red;
       color: white;
     }
-    .tooltip {
+    #popup {
       display: none;
       position: absolute;
       padding: 0;
@@ -69,7 +141,7 @@
       background: white;
       list-style-type: none;
     }
-    .tooltip li {
+    #popup li {
       margin: 0.2em;
     }
     .clients {
@@ -86,8 +158,7 @@
         <div>
           <textarea name="markup" placeholder="Paste HTML here"></textarea>
         </div>
-        <div>
-          <label><input type="checkbox" name="client[]" value="" checked /></label>
+        <div id="clients">
         </div>
         <div>
           <input type="submit" value="Check" />
@@ -97,15 +168,26 @@
     <div id="results" class="box" style="display:none;">
       <h1>Results</h1>
       <div class="content">
-        <table></table>
+        <table id="source"></table>
       </div>
-      <ul class="tooltip">
-        <li>
-          <div class="clients"></div>
-          <div class="description"></div>
-        </li>
+      <ul id="popup">
       </ul>
     </div>
   </section>
+  <script id="client" type="text/x-jquery-tmpl">
+    <label><input type="checkbox" name="client[]" value="${id}" {{if share}}checked{{/if}} />${name}</label>
+  </script>
+  <script id="issue" type="text/x-jquery-tmpl">
+    <li>
+      <div class="clients">{{html clientsAsHtml}}</div>
+      <div class="description">${description}</div>
+    </li>
+  </script>
+  <script id="line" type="text/x-jquery-tmpl">
+    <tr>
+      <th>${number}</th>
+      <td style="padding-left:${indentation}em">{{html content}}</td>
+    </tr>
+  </script>
 </body>
 </html>

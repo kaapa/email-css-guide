@@ -1,6 +1,6 @@
 (function() {
   var exports;
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+  var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
     ctor.prototype = parent.prototype;
@@ -14,112 +14,17 @@
   exports.CssGuide = (function() {
     function CssGuide() {}
     CssGuide.intersection = function(a, b) {
-      var element, _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = a.length; _i < _len; _i++) {
-        element = a[_i];
-        if (-1 < jQuery.inArray(element, b)) {
-          _results.push(element);
-        }
-      }
-      return _results;
+      return a.filter(function(n) {
+        return b.indexOf(n) === -1;
+      });
     };
     CssGuide.trim = function(string) {
       return string.replace(/^\s*/, "").replace(/\s*$/, "");
     };
-    CssGuide.Controller = (function() {
-      function Controller(suite, form, table, tooltip) {
-        var client, div, id, template, _ref;
-        this.suite = suite;
-        this.form = form;
-        this.table = table;
-        this.tooltip = tooltip;
-        div = $("div:nth-child(2)", this.form);
-        template = $("[name='client[]']").closest("label").remove();
-        _ref = this.suite.getClients();
-        for (id in _ref) {
-          client = _ref[id];
-          div.append(template.clone().append(client.name).find("input").attr("checked", client.share != null).val(id).end());
-        }
-        this.tooltipTemplate = this.tooltip.find("li").remove();
-        $("[data-match-id]").live("mouseenter", __bind(function(e) {
-          var clientHtml, id, position, test, _i, _len, _ref2;
-          position = $(e.target).position();
-          _ref2 = $(e.target).attr("data-match-id").split(" ");
-          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-            id = _ref2[_i];
-            test = this.suite.getTest(id);
-            clientHtml = this.getTooltipClientHtml(test);
-            this.tooltip.append(this.tooltipTemplate.clone().find(".clients").html(clientHtml).end().find(".description").text(test.description).end());
-            $("[data-match-id~='" + id + "']").addClass("highlight");
-          }
-          return this.tooltip.css({
-            display: "block",
-            top: "" + (position.top + 20) + "px",
-            left: position.left
-          });
-        }, this));
-        $("[data-match-id]").live("mouseleave", __bind(function(e) {
-          var id, _i, _len, _ref2, _results;
-          this.tooltip.html("");
-          this.tooltip.css("display", "none");
-          _ref2 = $(e.target).attr("data-match-id").split(" ");
-          _results = [];
-          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-            id = _ref2[_i];
-            _results.push($("[data-match-id~='" + id + "']").removeClass("highlight"));
-          }
-          return _results;
-        }, this));
-        this.form.bind("submit", __bind(function(e) {
-          e.preventDefault();
-          return this.test($("textarea", this.form.markup).val(), this.getSelectedClients());
-        }, this));
-      }
-      Controller.prototype.getTooltipClientHtml = function(test) {
-        var client, html, names;
-        names = (function() {
-          var _i, _len, _ref, _results;
-          _ref = test.clients;
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            client = _ref[_i];
-            _results.push(this.suite.getClient(client).name);
-          }
-          return _results;
-        }).call(this);
-        html = names.slice(0, 3).join(", ");
-        if (names.length > 3) {
-          html += " and <span title=\"" + (names.slice(3).join(", ")) + "\">" + (names.length - 3) + " other clients</span>";
-        }
-        return html;
-      };
-      Controller.prototype.test = function(input, clients) {
-        var index, line, _len, _ref;
-        this.table.html("");
-        input = this.suite.execute(input, clients);
-        _ref = input.split("\n");
-        for (index = 0, _len = _ref.length; index < _len; index++) {
-          line = _ref[index];
-          this.table.append("<tr>\n  <th>" + (index + 1) + "</th>\n  <td style=\"padding-left:" + (line.match(/^(\s*)/)[1].length) + "em\">" + line + "</td>\n</tr>");
-        }
-        return $("#results").show();
-      };
-      Controller.prototype.getSelectedClients = function() {
-        var el, _i, _len, _ref, _results;
-        _ref = $("[name='client[]']:checked", this.form);
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          el = _ref[_i];
-          _results.push(el.value);
-        }
-        return _results;
-      };
-      return Controller;
-    })();
     CssGuide.Parser = (function() {
-      function Parser(dom) {
+      function Parser(engine, dom) {
         var node, rule, sheet, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3;
+        this.engine = engine;
         this.tokens = [];
         _ref = dom.styleSheets;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -133,13 +38,13 @@
             });
           }
         }
-        _ref3 = $("[style]", dom);
+        _ref3 = this.engine("[style]", dom);
         for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
           node = _ref3[_k];
-          if ("" !== $(node).attr("style")) {
+          if ("" !== this.engine(node).attr("style")) {
             this.tokens.push({
               selector: node,
-              css: this.parseCssText($(node).attr("style"))
+              css: this.parseCssText(this.engine(node).attr("style"))
             });
           }
         }
@@ -154,7 +59,7 @@
           for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
             token = _ref[_j];
             if (token.css[property] !== void 0) {
-              if (-1 === jQuery.inArray(token, tokens)) {
+              if (-1 === tokens.indexOf(token)) {
                 tokens.push(token);
               }
             }
@@ -195,14 +100,16 @@
       return Parser;
     })();
     CssGuide.Suite = (function() {
-      function Suite() {}
       Suite.registry = [];
       Suite.defineTest = function(definition) {
         return this.registry.push(definition);
       };
+      function Suite(engine) {
+        this.engine = engine;
+      }
       Suite.prototype.createDocument = function(input) {
-        $("iframe").remove();
-        $('<iframe name="tokenizer" style="display:none;"></iframe>').appendTo(window.document.body);
+        this.engine("iframe").remove();
+        this.engine('<iframe name="tokenizer" style="display:none;"></iframe>').appendTo(window.document.body);
         if (!input.match(/<html[^>]*>/)) {
           if (!input.match(/<body[^>]*>/)) {
             input = "<body>" + input + "</body>";
@@ -222,12 +129,12 @@
         });
         markup = input.replace(/type="(text\/javascript)"/g, 'type="text/disabled-javascript"');
         dom = this.createDocument(markup);
-        parser = new CssGuide.Parser(dom);
+        parser = new CssGuide.Parser(this.engine, dom);
         _ref = this.constructor.registry;
         for (id = 0, _len = _ref.length; id < _len; id++) {
           test = _ref[id];
           if (CssGuide.intersection(test.clients, clients).length) {
-            _ref2 = test.callback(dom, parser) || [];
+            _ref2 = test.callback(this.engine, dom, parser) || [];
             for (_i = 0, _len2 = _ref2.length; _i < _len2; _i++) {
               matches = _ref2[_i];
               if (!(matches instanceof Array)) {
@@ -235,8 +142,8 @@
               }
               for (_j = 0, _len3 = matches.length; _j < _len3; _j++) {
                 match = matches[_j];
-                meta = $(match).attr('data-match-id') ? $(match).attr('data-match-id') + ' ' + id : id;
-                $(match).attr('data-match-id', meta);
+                meta = this.engine(match).attr('data-match-id') ? this.engine(match).attr('data-match-id') + ' ' + id : id;
+                this.engine(match).attr('data-match-id', meta);
               }
             }
           }
@@ -257,10 +164,37 @@
         return input = input.replace(new RegExp('{span class="match" data-match-id="([^"]+)"}(.+?){\/span}', "g"), '<span class="match" data-match-id="$1">$2</span>');
       };
       Suite.prototype.getClient = function(id) {
-        return this.constructor.clients[id];
+        return {
+          id: id,
+          name: this.constructor.clients[id].name,
+          share: this.constructor.clients[id].share != null
+        };
       };
       Suite.prototype.getClients = function() {
-        return this.constructor.clients;
+        var id, _results;
+        _results = [];
+        for (id in this.constructor.clients) {
+          _results.push(this.getClient(id));
+        }
+        return _results;
+      };
+      Suite.prototype.getClientsForTestAsHtml = function(test) {
+        var client, html, names;
+        names = (function() {
+          var _i, _len, _ref, _results;
+          _ref = test.clients;
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            client = _ref[_i];
+            _results.push(this.getClient(client).name);
+          }
+          return _results;
+        }).call(this);
+        html = names.slice(0, 3).join(", ");
+        if (names.length > 3) {
+          html += " and <span title=\"" + (names.slice(3).join(", ")) + "\">" + (names.length - 3) + " other clients</span>";
+        }
+        return html;
       };
       Suite.prototype.getTest = function(id) {
         return this.constructor.registry[id];
@@ -361,7 +295,7 @@
         description: "Does not support <style> element within <head>",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "blackberry", "gmail", "myspace", "notes_7", "palm_garnet"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           return $("head style", dom);
         }
       });
@@ -369,7 +303,7 @@
         description: "Does not support <style> element within <body>",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "palm_garnet"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           return $("body style", dom);
         }
       });
@@ -377,7 +311,7 @@
         description: "Does not support <link> element within <head>",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "blackberry", "gmail", "myspace", "palm_garnet"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           return $("head link", dom);
         }
       });
@@ -385,7 +319,7 @@
         description: "Does not support <link> element within <body>",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "palm_garnet"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           return $("body link", dom);
         }
       });
@@ -393,7 +327,7 @@
         description: "Does not support <frameset> element",
         source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx",
         clients: ["outlook_07"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           return $("frameset", dom);
         }
       });
@@ -401,7 +335,7 @@
         description: "Does not support <frame> element",
         source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx",
         clients: ["outlook_07"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           return $("frame", dom);
         }
       });
@@ -409,7 +343,7 @@
         description: "Does not support 'cols' attribute on <textarea> elements",
         source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx",
         clients: ["outlook_07"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           return $("textarea[cols]", dom);
         }
       });
@@ -417,7 +351,7 @@
         description: "Does not support 'colspan' attribute on table cells",
         source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx",
         clients: ["outlook_07"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           return $("td[colspan], th[colspan]", dom);
         }
       });
@@ -425,7 +359,7 @@
         description: "Does not support 'rowspan' attribute on table cells",
         source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx",
         clients: ["outlook_07"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           return $("td[rowspan], th[rowspan]", dom);
         }
       });
@@ -433,7 +367,7 @@
         description: "Does not support 'element' CSS selector",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "blackberry", "gmail", "myspace", "notes_7", "webos", "win_mobile_65"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var selectors;
           selectors = parser.findBySelector(/\b[a-z1-9]\b/i);
           if (selectors.length > 0) {
@@ -445,7 +379,7 @@
         description: "Does not support '*' CSS selector",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "outlook_07", "webos", "yahoo_classic", "win_mobile_65"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var selectors;
           selectors = parser.findBySelector(/\*/);
           if (selectors.length > 0) {
@@ -457,7 +391,7 @@
         description: "Does not support '.class' CSS selector",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "gmail", "myspace", "notes_7"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var selectors;
           selectors = parser.findBySelector(/\./);
           if (selectors.length > 0) {
@@ -469,7 +403,7 @@
         description: "Does not support '#id' CSS selector",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "gmail", "hotmail", "mobileme", "myspace", "notes_7"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var selectors;
           selectors = parser.findBySelector(/#/);
           if (selectors.length > 0) {
@@ -481,7 +415,7 @@
         description: "Does not support ':link' CSS selector",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "palm_garnet"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var selectors;
           selectors = parser.findBySelector(/:link/);
           if (selectors.length > 0) {
@@ -493,7 +427,7 @@
         description: "Does not support ':active' or ':hover' CSS selector",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "aol_web", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "outlook_07", "palm_garnet"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var selectors;
           selectors = parser.findBySelector(/:active|:hover/);
           if (selectors.length > 0) {
@@ -505,7 +439,7 @@
         description: "Does not support ':first-line' CSS selector",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "aol_web", "blackberry", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "outlook_07", "palm_garnet", "win_mobile_65", "yahoo_mail"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var selectors;
           selectors = parser.findBySelector(/:first-line/);
           if (selectors.length > 0) {
@@ -517,7 +451,7 @@
         description: "Does not support ':first-letter' CSS selector",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "aol_web", "blackberry", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "outlook_07", "palm_garnet", "win_mobile_65", "yahoo_mail"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var selectors;
           selectors = parser.findBySelector(/:first-letter/);
           if (selectors.length > 0) {
@@ -529,7 +463,7 @@
         description: "Does not support '>' CSS selector",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "aol_10", "blackberry", "gmail", "hotmail", "apple_iphone_3", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "webos", "win_mobile_65", "windows_mail"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var selectors;
           selectors = parser.findBySelector(/>/);
           if (selectors.length > 0) {
@@ -541,7 +475,7 @@
         description: "Does not support ':focus' CSS selector",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "aol_10", "blackberry", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "win_mobile_65", "windows_mail"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var selectors;
           selectors = parser.findBySelector(/:focus/);
           if (selectors.length > 0) {
@@ -553,7 +487,7 @@
         description: "Does not support '+' CSS selector",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "aol_10", "blackberry", "entourage_04", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "windows_mail", "yahoo_classic", "yahoo_mail"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var selectors;
           selectors = parser.findBySelector(/\+/);
           if (selectors.length > 0) {
@@ -565,7 +499,7 @@
         description: "Does not support '[attribute]' CSS selector",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "aol_10", "blackberry", "entourage_04", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "windows_mail"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var selectors;
           selectors = parser.findBySelector(/\[/);
           if (selectors.length > 0) {
@@ -577,7 +511,7 @@
         description: "Does not support 'direction' CSS property",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "entourage_04", "gmail", "notes_7", "outlook_07"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("direction");
           _results = [];
@@ -592,7 +526,7 @@
         description: "Does not support 'font' CSS property",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry", "notes_7", "palm_garnet"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("font");
           _results = [];
@@ -607,7 +541,7 @@
         description: "Does not support 'font-family' CSS property",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry", "palm_garnet", "win_mobile_65"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("font-family");
           _results = [];
@@ -622,7 +556,7 @@
         description: "Does not support 'font-style' CSS property",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["palm_garnet"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("font-style");
           _results = [];
@@ -637,7 +571,7 @@
         description: "Does not support 'font-variant' CSS property",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry", "notes_7", "palm_garnet"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("font-variant");
           _results = [];
@@ -652,7 +586,7 @@
         description: "Does not support 'font-size' CSS property",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("font-size");
           _results = [];
@@ -667,7 +601,7 @@
         description: "Does not support 'letter-spacing' CSS property",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry", "notes_7", "palm_garnet", "win_mobile_65"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("letter-spacing");
           _results = [];
@@ -682,7 +616,7 @@
         description: "Does not support 'line-height' CSS property",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry", "myspace", "notes_7", "palm_garnet"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("line-height");
           _results = [];
@@ -697,7 +631,7 @@
         description: "Does not support 'text-indent' CSS property",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry", "notes_7"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("text-indent");
           _results = [];
@@ -712,7 +646,7 @@
         description: "Does not support 'text-overflow' CSS property",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry", "entourage_04", "myspace", "notes_7", "outlook_07", "palm_garnet", "thunderbird_2", "yahoo_classic", "yahoo_mail"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("text-overflow");
           _results = [];
@@ -727,7 +661,7 @@
         description: "Does not support 'text-shadow' CSS property",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["aol_10", "aol_web", "blackberry", "entourage_04", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "thunderbird_2", "webos", "windows_mail", "win_mobile_65"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("text-shadow");
           _results = [];
@@ -742,7 +676,7 @@
         description: "Does not support 'text-transform' CSS property",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["notes_7", "palm_garnet"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("text-transform");
           _results = [];
@@ -757,7 +691,7 @@
         description: "Does not support 'white-space' CSS property",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["aol_10", "aol_web", "blackberry", "notes_7", "notes_8", "outlook_03", "palm_garnet", "windows_mail", "win_mobile_65"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("white-space");
           _results = [];
@@ -772,7 +706,7 @@
         description: "Does not support 'word-spacing' CSS property",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry", "notes_7", "outlook_07", "palm_garnet", "win_mobile_65"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("word-spacing");
           _results = [];
@@ -787,7 +721,7 @@
         description: "Does not support 'word-wrap' CSS property",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["android_gmail", "blackberry", "gmail", "hotmail", "entourage_04", "myspace", "notes_7", "outlook_07", "palm_garnet", "thunderbird_2", "win_mobile_65"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("word-wrap");
           _results = [];
@@ -802,7 +736,7 @@
         description: "Does not support 'vertical-align' CSS property",
         source: "http://www.campaignmonitor.com/css/",
         clients: ["blackberry", "android_email", "notes_7", "outlook_07"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("vertical-align");
           _results = [];
@@ -817,7 +751,7 @@
         description: "Does not support 'padding' CSS property on <div> and <p> elements",
         source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx",
         clients: ["outlook_07"],
-        callback: function(dom, parser) {
+        callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("padding", "padding-top", "padding-right", "padding-bottom", "padding-left");
           _results = [];
