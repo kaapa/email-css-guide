@@ -159,13 +159,6 @@ class exports.CssGuide
     getClients: ->
       @getClient(id) for id of @constructor.clients
 
-    getClientsForTestAsHtml: (test) ->
-      names = (@getClient(client).name for client in test.clients)
-      html = names[0..2].join ", "
-      if names.length > 3
-        html += " and <span title=\"#{ names[3..-1].join ", " }\">#{ names.length - 3 } other clients</span>"
-      html
-
     getTest: (id) ->
       @constructor.registry[id]
 

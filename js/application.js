@@ -178,24 +178,6 @@
         }
         return _results;
       };
-      Suite.prototype.getClientsForTestAsHtml = function(test) {
-        var client, html, names;
-        names = (function() {
-          var _i, _len, _ref, _results;
-          _ref = test.clients;
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            client = _ref[_i];
-            _results.push(this.getClient(client).name);
-          }
-          return _results;
-        }).call(this);
-        html = names.slice(0, 3).join(", ");
-        if (names.length > 3) {
-          html += " and <span title=\"" + (names.slice(3).join(", ")) + "\">" + (names.length - 3) + " other clients</span>";
-        }
-        return html;
-      };
       Suite.prototype.getTest = function(id) {
         return this.constructor.registry[id];
       };

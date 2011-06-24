@@ -56,7 +56,21 @@
         var test = suite.getTest(matches[i]);
 
         failures.push({
-          clientsAsHtml: suite.getClientsForTestAsHtml(test),
+          clientsAsHtml: function() {
+            var names = $.map(test.clients, function(id) {
+              return suite.getClient(id).name
+            });
+
+            var html = names.slice(0, 3).join(", ");
+
+            if (name.length == 4) {
+              html += ' and ' + names[3];
+            } else if (names.length > 4) {
+              html += ' and <span title="' + names.slice(3).join(", ") + '">' + (names.length - 3) + ' other clients</span>';
+            }
+
+            return html;
+          },
           description: test.description          
         });
 
@@ -110,16 +124,22 @@
     table {
       width: auto;
       border-collapse: collapse;
+      border: 1px solid lightGray;
     }
     th {
+      background-color: lightGray;
       color: gray;
       text-align: left;
       padding-right: 1em;
       vertical-align: top;
       text-align: right;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -o-user-select: none;
+      user-select: none;
     }
     th, td {
-      border: 1px solid lightGray;
       font-family: monospace;
       padding: 0.2em 0.5em;
     }
@@ -162,7 +182,7 @@
       color: gray;
     }
     .clients span {
-      text-decoration: underline;
+      border-bottom: 1px dotted gray;
       cursor: pointer;
     }
   </style>
@@ -195,14 +215,14 @@
   </script>
   <script id="issue" type="text/x-jquery-tmpl">
     <li>
-      <div class="clients">{{html clientsAsHtml}}</div>
+      <div class="clients">{{html clientsAsHtml()}}</div>
       <div class="description">${description}</div>
     </li>
   </script>
   <script id="line" type="text/x-jquery-tmpl">
     <tr>
       <th>${number}</th>
-      <td style="padding-left:${indentation}em">{{html content}}</td>
+      <td style="padding-left:${0.2 + indentation}em">{{html content}}</td>
     </tr>
   </script>
 </body>
