@@ -189,94 +189,97 @@
         EmailSuite.__super__.constructor.apply(this, arguments);
       }
       EmailSuite.clients = {
-        android_email: {
-          name: "Android Email"
+        hotmail: {
+          name: "Windows Live Hotmail",
+          type: "web",
+          share: 0.17
         },
-        android_gmail: {
-          name: "Android Gmail"
+        yahoo: {
+          name: "Yahoo! Mail Beta",
+          type: "web",
+          share: 0.13
+        },
+        gmail: {
+          name: "Gmail",
+          type: "web",
+          share: 0.05
+        },
+        aol: {
+          name: "AOL Mail",
+          type: "web"
+        },
+        outlook_2011_mac: {
+          name: "Outlook 2011 (Mac)",
+          type: "desktop"
+        },
+        outlook_10: {
+          name: "Outlook '07 / '10",
+          type: "desktop",
+          share: 0.9
+        },
+        outlook_03: {
+          name: "Outlook '03 / Express / Mail",
+          type: "desktop",
+          share: 0.36
+        },
+        apple_mail_4: {
+          name: "Apple Mail 4",
+          share: 0.04,
+          type: "desktop"
+        },
+        entourage_2008: {
+          name: "Entourage 2008",
+          type: "desktop"
+        },
+        notes_7: {
+          name: "Notes 6 / 7",
+          type: "desktop"
+        },
+        notes_8: {
+          name: "Lotus Notes 8.5",
+          type: "desktop",
+          share: 0.004
         },
         aol_10: {
           name: "AOL Desktop 10",
+          type: "desktop",
           share: 0.012
-        },
-        aol_web: {
-          name: "AOL Web"
-        },
-        apple_iphone_3: {
-          name: "Apple iPhone 3.0",
-          share: 0.04
-        },
-        apple_mail: {
-          name: "Apple Mail",
-          share: 0.04
-        },
-        blackberry: {
-          name: "Blackberry"
-        },
-        entourage_04: {
-          name: "Entourage 2004"
-        },
-        entourage_08: {
-          name: "Entourage 2008"
-        },
-        gmail: {
-          name: "Google Gmail",
-          share: 0.05
-        },
-        hotmail: {
-          name: "Live Hotmail",
-          share: 0.17
-        },
-        mobileme: {
-          name: "MobileMe"
-        },
-        myspace: {
-          name: "MySpace"
-        },
-        notes_7: {
-          name: "Lotus Notes 6/7",
-          share: 0.004
-        },
-        notes_8: {
-          name: "Lotus Notes 8.5"
-        },
-        outlook_03: {
-          name: "Outlook 2000/03",
-          share: 0.34
-        },
-        outlook_07: {
-          name: "Outlook 2007/10",
-          share: 0.9
-        },
-        palm_garnet: {
-          name: "Palm Garnet OS"
         },
         thunderbird_2: {
           name: "Thunderbird 2",
+          type: "desktop",
           share: 0.024
         },
-        yahoo_classic: {
-          name: "Yahoo! Classic"
+        ios_4: {
+          name: "iPhone iOS 4 / iPad",
+          type: "mobile",
+          share: 0.04
         },
-        yahoo_mail: {
-          name: "Yahoo! Mail",
-          share: 0.13
+        blackberry_6: {
+          name: "Blackberry 6",
+          type: "mobile"
         },
-        webos: {
-          name: "WebOS"
+        android_gingerbread: {
+          name: "Android 2.3 (Default mail)",
+          type: "mobile"
         },
-        windows_mail: {
-          name: "Windows Mail",
-          share: 0.02
+        android_gingerbread_gmail: {
+          name: "Android 2.3 (Gmail)",
+          type: "mobile"
         },
-        win_mobile_65: {
-          name: "Windows Mobile 6.5"
+        win_mobile_7: {
+          name: "Windows Mobile 7",
+          type: "mobile"
+        },
+        webos_2: {
+          name: "HP webOS 2",
+          type: "mobile"
         }
       };
       EmailSuite.defineTest({
         description: "Does not support <style> element within <head>",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["android_gmail", "blackberry", "gmail", "myspace", "notes_7", "palm_garnet"],
+        clients: ["gmail", "notes_7", "android_gingerbread_gmail", "windows_mobile_7"],
         callback: function($, dom, parser) {
           return $("head style", dom);
         }
@@ -284,7 +287,7 @@
       EmailSuite.defineTest({
         description: "Does not support <style> element within <body>",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "palm_garnet"],
+        clients: ["gmail", "notes_7", "android_gingerbread_gmail", "windows_mobile_7"],
         callback: function($, dom, parser) {
           return $("body style", dom);
         }
@@ -292,7 +295,7 @@
       EmailSuite.defineTest({
         description: "Does not support <link> element within <head>",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["android_gmail", "blackberry", "gmail", "myspace", "palm_garnet"],
+        clients: ["hotmail", "yahoo", "gmail", "aol", "notes_7", "android_gingerbread_gmail", "windows_mobile_7"],
         callback: function($, dom, parser) {
           return $("head link", dom);
         }
@@ -300,7 +303,7 @@
       EmailSuite.defineTest({
         description: "Does not support <link> element within <body>",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "palm_garnet"],
+        clients: ["hotmail", "yahoo", "gmail", "aol", "notes_7", "android_gingerbread_gmail", "windows_mobile_7"],
         callback: function($, dom, parser) {
           return $("body link", dom);
         }
@@ -308,7 +311,7 @@
       EmailSuite.defineTest({
         description: "Does not support <frameset> element",
         source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx",
-        clients: ["outlook_07"],
+        clients: ["outlook_10", "outlook_2011_mac"],
         callback: function($, dom, parser) {
           return $("frameset", dom);
         }
@@ -316,7 +319,7 @@
       EmailSuite.defineTest({
         description: "Does not support <frame> element",
         source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx",
-        clients: ["outlook_07"],
+        clients: ["outlook_10", "outlook_2011_mac"],
         callback: function($, dom, parser) {
           return $("frame", dom);
         }
@@ -324,7 +327,7 @@
       EmailSuite.defineTest({
         description: "Does not support 'cols' attribute on <textarea> elements",
         source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx",
-        clients: ["outlook_07"],
+        clients: ["outlook_10", "outlook_2011_mac"],
         callback: function($, dom, parser) {
           return $("textarea[cols]", dom);
         }
@@ -332,7 +335,7 @@
       EmailSuite.defineTest({
         description: "Does not support 'colspan' attribute on table cells",
         source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx",
-        clients: ["outlook_07"],
+        clients: ["outlook_10", "outlook_2011_mac"],
         callback: function($, dom, parser) {
           return $("td[colspan], th[colspan]", dom);
         }
@@ -340,27 +343,15 @@
       EmailSuite.defineTest({
         description: "Does not support 'rowspan' attribute on table cells",
         source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx",
-        clients: ["outlook_07"],
+        clients: ["outlook_10", "outlook_2011_mac"],
         callback: function($, dom, parser) {
           return $("td[rowspan], th[rowspan]", dom);
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support 'element' CSS selector",
+        description: "Does not support * CSS selector",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["android_gmail", "blackberry", "gmail", "myspace", "notes_7", "webos", "win_mobile_65"],
-        callback: function($, dom, parser) {
-          var selectors;
-          selectors = parser.findBySelector(/\b[a-z1-9]\b/i);
-          if (selectors.length > 0) {
-            return $(selectors.join(", "), dom);
-          }
-        }
-      });
-      EmailSuite.defineTest({
-        description: "Does not support '*' CSS selector",
-        source: "http://www.campaignmonitor.com/css/",
-        clients: ["android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "outlook_07", "webos", "yahoo_classic", "win_mobile_65"],
+        clients: ["hotmail", "yahoo", "gmail", "aol", "outlook_10", "android_gingerbread_gmail", "windows_mobile_7"],
         callback: function($, dom, parser) {
           var selectors;
           selectors = parser.findBySelector(/\*/);
@@ -370,93 +361,261 @@
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support '.class' CSS selector",
+        description: "Does not support E CSS selector",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["android_gmail", "gmail", "myspace", "notes_7"],
+        clients: ["gmail", "android_gingerbread_gmail", "windows_mobile_7"],
         callback: function($, dom, parser) {
           var selectors;
-          selectors = parser.findBySelector(/\./);
+          selectors = parser.findBySelector(/\b[a-z1-9]\b/i);
           if (selectors.length > 0) {
             return $(selectors.join(", "), dom);
           }
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support '#id' CSS selector",
+        description: "Does not support [attribute] CSS selector",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["android_gmail", "gmail", "hotmail", "mobileme", "myspace", "notes_7"],
+        clients: ["hotmail", "yahoo", "gmail", "outlook_10", "outlook_03", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
         callback: function($, dom, parser) {
           var selectors;
-          selectors = parser.findBySelector(/#/);
+          selectors = parser.findBySelector(/\[[a-z0-9_-]+\]/i);
           if (selectors.length > 0) {
             return $(selectors.join(", "), dom);
           }
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support ':link' CSS selector",
+        description: "Does not support [attribute='value'] CSS selector",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["android_gmail", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "palm_garnet"],
+        clients: [],
         callback: function($, dom, parser) {
           var selectors;
-          selectors = parser.findBySelector(/:link/);
+          selectors = parser.findBySelector(/\[[a-z0-9_-]+=[^\]]+\]/i);
           if (selectors.length > 0) {
             return $(selectors.join(", "), dom);
           }
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support ':active' or ':hover' CSS selector",
+        description: "Does not support [attribute='value'] CSS selector",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["android_gmail", "aol_web", "blackberry", "gmail", "mobileme", "myspace", "notes_7", "outlook_07", "palm_garnet"],
+        clients: ["hotmail", "yahoo", "gmail", "outlook_10", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
         callback: function($, dom, parser) {
           var selectors;
-          selectors = parser.findBySelector(/:active|:hover/);
+          selectors = parser.findBySelector(/\[[a-z0-9_-]+=[^\]]+\]/i);
           if (selectors.length > 0) {
             return $(selectors.join(", "), dom);
           }
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support ':first-line' CSS selector",
+        description: "Does not support [attribute~='value'] CSS selector",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["android_gmail", "aol_web", "blackberry", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "outlook_07", "palm_garnet", "win_mobile_65", "yahoo_mail"],
+        clients: ["hotmail", "yahoo", "gmail", "outlook_10", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
         callback: function($, dom, parser) {
           var selectors;
-          selectors = parser.findBySelector(/:first-line/);
+          selectors = parser.findBySelector(/\[[a-z0-9_-]+~=[^\]]+\]/i);
           if (selectors.length > 0) {
             return $(selectors.join(", "), dom);
           }
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support ':first-letter' CSS selector",
+        description: "Does not support [attribute^='value'] CSS selector",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["android_gmail", "aol_web", "blackberry", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "outlook_07", "palm_garnet", "win_mobile_65", "yahoo_mail"],
+        clients: ["hotmail", "yahoo", "gmail", "outlook_10", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
         callback: function($, dom, parser) {
           var selectors;
-          selectors = parser.findBySelector(/:first-letter/);
+          selectors = parser.findBySelector(/\[[a-z0-9_-]+^=[^\]]+\]/i);
           if (selectors.length > 0) {
             return $(selectors.join(", "), dom);
           }
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support '>' CSS selector",
+        description: "Does not support [attribute$='value'] CSS selector",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["android_gmail", "aol_10", "blackberry", "gmail", "hotmail", "apple_iphone_3", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "webos", "win_mobile_65", "windows_mail"],
+        clients: ["hotmail", "yahoo", "gmail", "outlook_10", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
         callback: function($, dom, parser) {
           var selectors;
-          selectors = parser.findBySelector(/>/);
+          selectors = parser.findBySelector(/\[[a-z0-9_-]+\$=[^\]]+\]/i);
           if (selectors.length > 0) {
             return $(selectors.join(", "), dom);
           }
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support ':focus' CSS selector",
+        description: "Does not support [attribute*='value'] CSS selector",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["android_gmail", "aol_10", "blackberry", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "win_mobile_65", "windows_mail"],
+        clients: ["hotmail", "yahoo", "gmail", "outlook_10", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/\[[a-z0-9_-]+\*=[^\]]+\]/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E:nth-child(n) CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["hotmail", "yahoo", "gmail", "outlook_03", "outlook_10", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:nth-child/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E:nth-last-child(n) CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["hotmail", "yahoo", "gmail", "outlook_03", "outlook_10", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:nth-last-child/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E:nth-of-type(n) CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["hotmail", "yahoo", "gmail", "outlook_03", "outlook_10", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:nth-of-type/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E:nth-last-of-type(n) CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["hotmail", "yahoo", "gmail", "outlook_03", "outlook_10", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:nth-last-of-type/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E:first-child CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["hotmail", "yahoo", "gmail", "outlook_10", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:first-child/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E:last-child CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["hotmail", "yahoo", "gmail", "outlook_03", "outlook_10", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:last-child/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E:first-of-type CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["hotmail", "yahoo", "gmail", "outlook_03", "outlook_10", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:first-of-type/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E:last-of-type CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["hotmail", "yahoo", "gmail", "outlook_03", "outlook_10", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:last-of-type/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E:empty CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["hotmail", "yahoo", "gmail", "outlook_03", "outlook_10", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:empty/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E:link CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["hotmail", "yahoo", "gmail", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:link/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E:visited CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["hotmail", "gmail", "aol", "outlook_2011_mac", "outlook_03", "apple_mail_4", "entourage_2008", "notes_7", "thunderbird_2", "android_gingerbread_gmail", "windows_mobile_7", "webos_2"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:visited/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E:active CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["gmail", "outlook_10", "notes_7", "ios_4", "blackberry_6", "android_gingerbread", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:active/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E:hover CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["gmail", "outlook_10", "notes_7", "ios_4", "blackberry_6", "android_gingerbread", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:hover/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E:focus CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["hotmail", "yahoo", "gmail", "aol", "outlook_2011_mac", "outlook_10", "outlook_03", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread", "android_gingerbread_gmail", "windows_mobile_7", "webos_2"],
         callback: function($, dom, parser) {
           var selectors;
           selectors = parser.findBySelector(/:focus/);
@@ -466,33 +625,153 @@
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support '+' CSS selector",
+        description: "Does not support E:target CSS selector",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["android_gmail", "aol_10", "blackberry", "entourage_04", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "windows_mail", "yahoo_classic", "yahoo_mail"],
+        clients: ["hotmail", "yahoo", "gmail", "aol", "outlook_2011_mac", "outlook_10", "outlook_03", "apple_mail_4", "entourage_2008", "notes_7", "notes_8", "aol_desktop_10", "thunderbird_2", "ios_4", "blackberry_6", "android_gingerbread", "android_gingerbread_gmail", "windows_mobile_7", "webos_2"],
         callback: function($, dom, parser) {
           var selectors;
-          selectors = parser.findBySelector(/\+/);
+          selectors = parser.findBySelector(/:target/);
           if (selectors.length > 0) {
             return $(selectors.join(", "), dom);
           }
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support '[attribute]' CSS selector",
+        description: "Does not support E:first-line CSS selector",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["android_gmail", "aol_10", "blackberry", "entourage_04", "gmail", "hotmail", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "windows_mail"],
+        clients: ["hotmail", "gmail", "outlook_10", "thunderbird_2", "android_gingerbread_gmail", "windows_mobile_7"],
         callback: function($, dom, parser) {
           var selectors;
-          selectors = parser.findBySelector(/\[/);
+          selectors = parser.findBySelector(/:first-line/);
           if (selectors.length > 0) {
             return $(selectors.join(", "), dom);
           }
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support 'direction' CSS property",
+        description: "Does not support E:first-letter CSS selector",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["android_gmail", "entourage_04", "gmail", "notes_7", "outlook_07"],
+        clients: ["hotmail", "gmail", "outlook_10", "thunderbird_2", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:first-letter/);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E:before CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["hotmail", "yahoo", "gmail", "outlook_10", "outlook_03", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:before/);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E:after CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["hotmail", "yahoo", "gmail", "outlook_10", "outlook_03", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:after/);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E.class CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["gmail", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/\./);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E#id CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["hotmail", "gmail", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/#/);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E:not(s) CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["hotmail", "yahoo", "gmail", "outlook_10", "outlook_03", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/:not\(/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E F CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["gmail", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/\w\s\w/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E > F CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["hotmail", "gmail", "aol", "outlook_10", "outlook_03", "notes_7", "notes_8", "aol_desktop_10", "blackberry_6", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/>/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E + F CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["hotmail", "gmail", "outlook_10", "outlook_03", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/\s\+\s/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support E - F CSS selector",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["hotmail", "yahoo", "gmail", "outlook_10", "notes_7", "notes_8", "aol_desktop_10", "android_gingerbread_gmail", "windows_mobile_7"],
+        callback: function($, dom, parser) {
+          var selectors;
+          selectors = parser.findBySelector(/\s\-\s/i);
+          if (selectors.length > 0) {
+            return $(selectors.join(", "), dom);
+          }
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support direction CSS property",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["outlook_10", "notes_7"],
         callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("direction");
@@ -505,9 +784,9 @@
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support 'font' CSS property",
+        description: "Does not support font CSS property",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["blackberry", "notes_7", "palm_garnet"],
+        clients: ["notes_7"],
         callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("font");
@@ -520,9 +799,9 @@
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support 'font-family' CSS property",
+        description: "Does not support font-family CSS property",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["blackberry", "palm_garnet", "win_mobile_65"],
+        clients: [],
         callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("font-family");
@@ -535,9 +814,9 @@
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support 'font-style' CSS property",
+        description: "Does not support font-style CSS property",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["palm_garnet"],
+        clients: [],
         callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("font-style");
@@ -550,9 +829,9 @@
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support 'font-variant' CSS property",
+        description: "Does not support font-variant CSS property",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["blackberry", "notes_7", "palm_garnet"],
+        clients: ["notes_7"],
         callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("font-variant");
@@ -565,9 +844,24 @@
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support 'font-size' CSS property",
+        description: "Minimum font-size is 13px",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["blackberry"],
+        clients: ["ios_4"],
+        callback: function($, dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("font-size");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push(!(parseInt(token.css["font-size"]) < 13) ? $(token.selector, dom) : void 0);
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support font-size CSS property",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["blackberry_6"],
         callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("font-size");
@@ -580,9 +874,24 @@
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support 'letter-spacing' CSS property",
+        description: "Does not support font-weight CSS property",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["blackberry", "notes_7", "palm_garnet", "win_mobile_65"],
+        clients: [],
+        callback: function($, dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("font-weight");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support letter-spacing CSS property",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["notes_7"],
         callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("letter-spacing");
@@ -595,9 +904,9 @@
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support 'line-height' CSS property",
+        description: "Does not support line-height CSS property",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["blackberry", "myspace", "notes_7", "palm_garnet"],
+        clients: ["notes_7"],
         callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("line-height");
@@ -610,9 +919,39 @@
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support 'text-indent' CSS property",
+        description: "Does not support text-align CSS property",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["blackberry", "notes_7"],
+        clients: [],
+        callback: function($, dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("text-align");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support text-decoration CSS property",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: [],
+        callback: function($, dom, parser) {
+          var token, _i, _len, _ref, _results;
+          _ref = parser.findByProperty("text-decoration");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            token = _ref[_i];
+            _results.push($(token.selector, dom));
+          }
+          return _results;
+        }
+      });
+      EmailSuite.defineTest({
+        description: "Does not support text-indent CSS property",
+        source: "http://www.campaignmonitor.com/css/",
+        clients: ["notes_7"],
         callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("text-indent");
@@ -625,9 +964,9 @@
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support 'text-overflow' CSS property",
+        description: "Does not support text-overflow CSS property",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["blackberry", "entourage_04", "myspace", "notes_7", "outlook_07", "palm_garnet", "thunderbird_2", "yahoo_classic", "yahoo_mail"],
+        clients: ["outlook_10", "notes_7", "thunderbird_2", "blackberry_6", "windows_mobile_7"],
         callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("text-overflow");
@@ -640,99 +979,73 @@
         }
       });
       EmailSuite.defineTest({
-        description: "Does not support 'text-shadow' CSS property",
+        description: "Firefox does not support text-overflow: ellipsis",
         source: "http://www.campaignmonitor.com/css/",
-        clients: ["aol_10", "aol_web", "blackberry", "entourage_04", "mobileme", "myspace", "notes_7", "notes_8", "outlook_03", "outlook_07", "palm_garnet", "thunderbird_2", "webos", "windows_mail", "win_mobile_65"],
+        clients: ["hotmail", "yahoo", "gmail", "aol"],
         callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
-          _ref = parser.findByProperty("text-shadow");
+          _ref = parser.findByProperty("text-overflow");
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             token = _ref[_i];
-            _results.push($(token.selector, dom));
+            _results.push(token.css["text-overflow"] === "ellipsis" ? $(token.selector, dom) : void 0);
           }
           return _results;
         }
       });
+      /*
+          @defineTest
+            description: "Does not support 'text-shadow' CSS property"
+            source: "http://www.campaignmonitor.com/css/"
+            clients: [ ]
+            callback: ($, dom, parser) ->
+              for token in parser.findByProperty("text-shadow")
+                $(token.selector, dom)
+      
+          @defineTest
+            description: "Does not support 'text-transform' CSS property"
+            source: "http://www.campaignmonitor.com/css/"
+            clients: [ ]
+            callback: ($, dom, parser) ->
+              for token in parser.findByProperty("text-transform")
+                $(token.selector, dom)
+      
+          @defineTest
+            description: "Does not support 'white-space' CSS property"
+            source: "http://www.campaignmonitor.com/css/"
+            clients: [ ]
+            callback: ($, dom, parser) ->
+              for token in parser.findByProperty("white-space")
+                $(token.selector, dom)
+      
+          @defineTest
+            description: "Does not support 'word-spacing' CSS property"
+            source: "http://www.campaignmonitor.com/css/"
+            clients: [ ]
+            callback: ($, dom, parser) ->
+              for token in parser.findByProperty("word-spacing")
+                $(token.selector, dom)
+      
+          @defineTest
+            description: "Does not support 'word-wrap' CSS property"
+            source: "http://www.campaignmonitor.com/css/"
+            clients: [ ]
+            callback: ($, dom, parser) ->
+              for token in parser.findByProperty("word-wrap")
+                $(token.selector, dom)
+      
+          @defineTest
+            description: "Does not support 'vertical-align' CSS property"
+            source: "http://www.campaignmonitor.com/css/"
+            clients: [ ]
+            callback: ($, dom, parser) ->
+              for token in parser.findByProperty("vertical-align")
+                $(token.selector, dom)
+          */
       EmailSuite.defineTest({
-        description: "Does not support 'text-transform' CSS property",
-        source: "http://www.campaignmonitor.com/css/",
-        clients: ["notes_7", "palm_garnet"],
-        callback: function($, dom, parser) {
-          var token, _i, _len, _ref, _results;
-          _ref = parser.findByProperty("text-transform");
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            token = _ref[_i];
-            _results.push($(token.selector, dom));
-          }
-          return _results;
-        }
-      });
-      EmailSuite.defineTest({
-        description: "Does not support 'white-space' CSS property",
-        source: "http://www.campaignmonitor.com/css/",
-        clients: ["aol_10", "aol_web", "blackberry", "notes_7", "notes_8", "outlook_03", "palm_garnet", "windows_mail", "win_mobile_65"],
-        callback: function($, dom, parser) {
-          var token, _i, _len, _ref, _results;
-          _ref = parser.findByProperty("white-space");
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            token = _ref[_i];
-            _results.push($(token.selector, dom));
-          }
-          return _results;
-        }
-      });
-      EmailSuite.defineTest({
-        description: "Does not support 'word-spacing' CSS property",
-        source: "http://www.campaignmonitor.com/css/",
-        clients: ["blackberry", "notes_7", "outlook_07", "palm_garnet", "win_mobile_65"],
-        callback: function($, dom, parser) {
-          var token, _i, _len, _ref, _results;
-          _ref = parser.findByProperty("word-spacing");
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            token = _ref[_i];
-            _results.push($(token.selector, dom));
-          }
-          return _results;
-        }
-      });
-      EmailSuite.defineTest({
-        description: "Does not support 'word-wrap' CSS property",
-        source: "http://www.campaignmonitor.com/css/",
-        clients: ["android_gmail", "blackberry", "gmail", "hotmail", "entourage_04", "myspace", "notes_7", "outlook_07", "palm_garnet", "thunderbird_2", "win_mobile_65"],
-        callback: function($, dom, parser) {
-          var token, _i, _len, _ref, _results;
-          _ref = parser.findByProperty("word-wrap");
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            token = _ref[_i];
-            _results.push($(token.selector, dom));
-          }
-          return _results;
-        }
-      });
-      EmailSuite.defineTest({
-        description: "Does not support 'vertical-align' CSS property",
-        source: "http://www.campaignmonitor.com/css/",
-        clients: ["blackberry", "android_email", "notes_7", "outlook_07"],
-        callback: function($, dom, parser) {
-          var token, _i, _len, _ref, _results;
-          _ref = parser.findByProperty("vertical-align");
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            token = _ref[_i];
-            _results.push($(token.selector, dom));
-          }
-          return _results;
-        }
-      });
-      EmailSuite.defineTest({
-        description: "Does not support 'padding' CSS property on <div> and <p> elements",
+        description: "Does not support padding CSS property on <div> and <p> elements",
         source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx",
-        clients: ["outlook_07"],
+        clients: [outlook_10, outlook_2011_mac],
         callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("padding", "padding-top", "padding-right", "padding-bottom", "padding-left");
