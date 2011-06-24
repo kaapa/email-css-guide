@@ -242,7 +242,7 @@ class exports.CssGuide
         name: "Android 2.3 (Gmail)"
         type: "mobile"
 
-      win_mobile_7:
+      windows_mobile_7:
         name: "Windows Mobile 7"
         type: "mobile"
 
@@ -774,7 +774,7 @@ class exports.CssGuide
     @defineTest
       description: "Does not support padding CSS property on <div> and <p> elements"
       source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx"
-      clients: [ outlook_10, outlook_2011_mac ]
+      clients: [ "outlook_10" ]
       callback: ($, dom, parser) ->
         for token in parser.findByProperty("padding", "padding-top", "padding-right", "padding-bottom", "padding-left")
           $(token.selector, dom).filter "p, div"

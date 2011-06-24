@@ -267,7 +267,7 @@
           name: "Android 2.3 (Gmail)",
           type: "mobile"
         },
-        win_mobile_7: {
+        windows_mobile_7: {
           name: "Windows Mobile 7",
           type: "mobile"
         },
@@ -1045,7 +1045,7 @@
       EmailSuite.defineTest({
         description: "Does not support padding CSS property on <div> and <p> elements",
         source: "http://msdn.microsoft.com/en-us/library/aa338201(v=office.12).aspx",
-        clients: [outlook_10, outlook_2011_mac],
+        clients: ["outlook_10"],
         callback: function($, dom, parser) {
           var token, _i, _len, _ref, _results;
           _ref = parser.findByProperty("padding", "padding-top", "padding-right", "padding-bottom", "padding-left");
