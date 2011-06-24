@@ -41,12 +41,15 @@
     });
 
     $("[data-match-id]").live("mouseenter", function(e) {
+
+      if (!$(e.target).hasClass("match")) {
+        return false;
+      }
       
-      $("#popup").empty();
-      
+      $("#popup ul").empty().parent().appendTo(this);
+
       var failures = [],
-          matches = $(e.target).attr("data-match-id").split(" "),
-          position = $(e.target).position();
+          matches = $(this).attr("data-match-id").split(" ");
       
       for (var i in matches) {
 
@@ -60,20 +63,16 @@
         $("[data-match-id~='" + matches[i] + "']").addClass("highlight");
       }
 
-      $("#issue").tmpl(failures).appendTo("#popup");
-
-      $("#popup").css({
-        display: "block",
-        top: position.top + 20 +"px",
-        left: position.left
-      });
+      $("#issue").tmpl(failures).appendTo("#popup ul");
     });
 
     $("[data-match-id]").live("mouseleave", function(e) {
+
+      if (!$(e.target).hasClass("match")) {
+        return false;
+      }
       
-      $("#popup").empty().css("display", "none");
-      
-      var matches = $(e.target).attr("data-match-id").split(" ");
+      var matches = $(this).attr("data-match-id").split(" ");
 
       for (var i in matches) {
         $("[data-match-id~='" + matches[i] + "']").removeClass("highlight");
@@ -127,26 +126,44 @@
     .match {
       color: red;
       cursor: pointer;
+      position: relative;
     }
     .match:hover, .highlight {
       background-color: red;
       color: white;
     }
     #popup {
+      z-index: 2;
       display: none;
       position: absolute;
+      top: 1em;
+      left: 10px;
+      width: 400px;
+      padding-top: 10px;
+      cursor: auto;
+    }
+    .match:hover #popup, #popup:hover {
+      display: block;
+    }    
+    #popup ul {
       padding: 0;
       margin: 0;
       border: 1px solid black;
       background: white;
-      list-style-type: none;
+      list-style-type: none;      
     }
     #popup li {
       margin: 0.2em;
+      font-size: 1em;
+      color: black;
     }
     .clients {
       font-size: 0.8em;
       color: gray;
+    }
+    .clients span {
+      text-decoration: underline;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -170,8 +187,7 @@
       <div class="content">
         <table id="source"></table>
       </div>
-      <ul id="popup">
-      </ul>
+      <div id="popup"><ul></ul></div>
     </div>
   </section>
   <script id="client" type="text/x-jquery-tmpl">
