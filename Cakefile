@@ -1,10 +1,8 @@
-option '-f', '--file [file]', 'filename for compiled code'
-
-filename = (options) ->
- "#{options.file || 'application'}.js"
+option '-p', '--production', 'Build for production'
 
 task 'build', 'Build application', (options) ->
-  require('child_process').exec "coffee --join js/#{filename options} --compile CssGuide.coffee"
-
-task 'Minify', 'Minify application.js (requires uglify-js)', (options) ->
-  require('child_process').exec "cat js/#{filename options} | uglifyjs > js/#{filename options}"
+  process = require('child_process')
+  process.exec "coffee --join lib/css-guide.js --compile src/CssGuide.coffee"
+  if options.production?
+    files = ["lib/jquery-1.6.1.js", "lib/jquery.tmpl.js", "lib/css-guide.js", "lib/application.js"]
+    process.exec "cat #{files.join(' ')} | uglifyjs > app/application.min.js"

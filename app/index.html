@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Email CSS Guide</title>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <link href="layout.css" media="screen" rel="stylesheet" type="text/css" />
+  <script src="../lib/jquery-1.6.1.js"></script>
+  <script src="../lib/jquery.tmpl.js"></script>
+  <script src="../lib/css-guide.js"></script>
+  <script src="../lib/application.js"></script>
+  <!-- <script src="application.min.js"></script> -->
+</head>
+<body>
+  <section>
+    <div id="input" class="box">
+      <h1>Email CSS Guide</h1>
+      <form class="content">
+        <div>
+          <textarea name="markup" placeholder="Paste HTML here"></textarea>
+        </div>
+        <div id="clients">
+          <div class="toggle">Select clients</div>
+          <div class="content"></div>
+        </div>
+        <div>
+          <input type="submit" value="Check" />
+        </div>
+      </form>
+    </div>
+    <div id="results" class="box" style="display:none;">
+      <h1>Results</h1>
+      <div class="content">
+        <table id="source"></table>
+      </div>
+      <div id="popup"><ul></ul></div>
+    </div>
+  </section>
+  <script id="categories" type="text/x-jquery-tmpl">
+    {{each $data}}
+      <fieldset>
+      <legend>${$index}</legend>
+      {{each $value}}
+        <label><input type="checkbox" name="client[]" value="${id}" {{if share}}checked{{/if}} />${name}</label>
+      {{/each}}
+      </fieldset>
+    {{/each}}
+  </script>
+  <script id="issue" type="text/x-jquery-tmpl">
+    <li>
+      <div class="clients">{{html clientsAsHtml()}}</div>
+      <div class="description">${description}</div>
+    </li>
+  </script>
+  <script id="line" type="text/x-jquery-tmpl">
+    <tr>
+      <th>${number}</th>
+      <td style="padding-left:${0.2 + indentation}em">{{html content}}</td>
+    </tr>
+  </script>
+</body>
+</html>

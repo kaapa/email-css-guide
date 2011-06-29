@@ -155,9 +155,24 @@ class exports.CssGuide
       id: id
       name: @constructor.clients[id].name
       share: @constructor.clients[id].share?
+      type: @constructor.clients[id].type
 
     getClients: ->
-      @getClient(id) for id of @constructor.clients
+      clients = (@getClient(id) for id of @constructor.clients)
+      clients.sort (a, b) ->
+        [a, b] = [a.name.toLowerCase(), b.name.toLowerCase()]
+        if a < b then -1
+        else if a > b then 1
+        else 1
+
+    getClientsCategorized: ->
+      categories =
+        desktop: []
+        mobile: []
+        web: []
+      for client in @getClients()
+        categories[client.type].push(client)
+      categories
 
     getTest: (id) ->
       @constructor.registry[id]
@@ -720,6 +735,127 @@ class exports.CssGuide
       callback: ($, dom, parser) ->
         for token in parser.findByProperty("text-overflow")
           $(token.selector, dom) if token.css["text-overflow"] == "ellipsis"
+
+    @defineTest
+      description: "Does not support text-shadow CSS property"
+      source: "http://www.campaignmonitor.com/css/"
+      clients: [ "outlook_10", "outlook_03", "notes_7", "notes_8", "aol_desktop_10", "thunderbird_2", "windows_mobile_7", "webos_2" ]
+      callback: ($, dom, parser) ->
+        for token in parser.findByProperty("text-shadow")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Internet Explorer does not support text-shadow CSS property"
+      source: "http://www.campaignmonitor.com/css/"
+      clients: [ "hotmail", "yahoo", "gmail", "aol" ]
+      callback: ($, dom, parser) ->
+        for token in parser.findByProperty("text-shadow")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support text-transform CSS property"
+      source: "http://www.campaignmonitor.com/css/"
+      clients: [ "notes_7" ]
+      callback: ($, dom, parser) ->
+        for token in parser.findByProperty("text-transform")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support white-space CSS property"
+      source: "http://www.campaignmonitor.com/css/"
+      clients: [ "outlook_03", "notes_7", "notes_8", "aol_desktop_10" ]
+      callback: ($, dom, parser) ->
+        for token in parser.findByProperty("white-space")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support word-spacing CSS property"
+      source: "http://www.campaignmonitor.com/css/"
+      clients: [ "outlook_10", "notes_7" ]
+      callback: ($, dom, parser) ->
+        for token in parser.findByProperty("word-spacing")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support word-wrap CSS property"
+      source: "http://www.campaignmonitor.com/css/"
+      clients: [ "gmail", "outlook_10", "notes_7", "thunderbird_2", "android_gingerbread_gmail", "windows_mobile_7" ]
+      callback: ($, dom, parser) ->
+        for token in parser.findByProperty("word-wrap")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support word-wrap: normal"
+      source: "http://www.campaignmonitor.com/css/"
+      clients: [ "outlook_03", "notes_8", "aol_desktop_10" ]
+      callback: ($, dom, parser) ->
+        for token in parser.findByProperty("text-overflow")
+          $(token.selector, dom) if token.css["word-wrap"] == "normal"
+
+    @defineTest
+      description: "Does not support vertical-align CSS property"
+      source: "http://www.campaignmonitor.com/css/"
+      clients: [ "outlook_10", "notes_7" ]
+      callback: ($, dom, parser) ->
+        for token in parser.findByProperty("vertical-align")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support color CSS property"
+      source: "http://www.campaignmonitor.com/css/"
+      clients: [ ]
+      callback: ($, dom, parser) ->
+        for token in parser.findByProperty("color")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support background CSS property"
+      source: "http://www.campaignmonitor.com/css/"
+      clients: [ "notes_7", "notes_8" ]
+      callback: ($, dom, parser) ->
+        for token in parser.findByProperty("background")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support background CSS property with images"
+      source: "http://www.campaignmonitor.com/css/"
+      clients: [ "hotmail", "gmail", "outlook_10", "android_gingerbread_gmail", "windows_mobile_7" ]
+      callback: ($, dom, parser) ->
+        for token in parser.findByProperty("background")
+          $(token.selector, dom) if token.css["background"].match /url\([^)]+\)/gi
+
+    @defineTest
+      description: "Does not support background-color CSS property"
+      source: "http://www.campaignmonitor.com/css/"
+      clients: [ "notes_7" ]
+      callback: ($, dom, parser) ->
+        for token in parser.findByProperty("background-color")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support background-image CSS property"
+      source: "http://www.campaignmonitor.com/css/"
+      clients: [ "hotmail", "gmail", "outlook_10", "notes_7", "notes_8", "android_gingerbread_gmail", "windows_mobile_7" ]
+      callback: ($, dom, parser) ->
+        for token in parser.findByProperty("background-image")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support background-position CSS property"
+      source: "http://www.campaignmonitor.com/css/"
+      clients: [ "hotmail", "gmail", "outlook_10", "notes_7", "notes_8", "android_gingerbread_gmail", "windows_mobile_7" ]
+      callback: ($, dom, parser) ->
+        for token in parser.findByProperty("background-position")
+          $(token.selector, dom)
+
+    @defineTest
+      description: "Does not support background-repeat CSS property"
+      source: "http://www.campaignmonitor.com/css/"
+      clients: [ "hotmail", "gmail", "outlook_10", "notes_7", "notes_8", "android_gingerbread_gmail", "windows_mobile_7" ]
+      callback: ($, dom, parser) ->
+        for token in parser.findByProperty("background-repeat")
+          $(token.selector, dom)
+
 
     ###
     @defineTest
