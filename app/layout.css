@@ -19,16 +19,18 @@ textarea {
   max-width: 1195px;
   height: 20em;
 }
-#clients .toggle {
-  margin-top: 0;
-  padding-bottom: 0.2em;
-  cursor: pointer;
+.step .number {
+  border: 1px solid gray;
+  color: white;
+  background: lightGray;
+  width: 1.2em;
+  text-align:center;
+  display: inline-block;
+  margin-right: 0.4em;
 }
-#clients .toggle:hover {
-  text-decoration: underline;
-}
-#clients .content {
-  display: none;
+.step .tip {
+  color: gray;
+  font-size: 0.8em;
 }
 #clients fieldset {
   border: none;
@@ -55,7 +57,7 @@ label {
   margin-right: 1em;
 }
 table {
-  width: auto;
+  width: 100%;
   border-collapse: collapse;
   border: 1px solid lightGray;
 }
@@ -75,6 +77,9 @@ th {
 th, td {
   font-family: monospace;
   padding: 0.2em 0.5em;
+}
+td {
+  width: 100%;
 }
 .match {
   color: red;

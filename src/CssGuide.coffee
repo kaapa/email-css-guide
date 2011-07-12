@@ -21,19 +21,23 @@ class exports.CssGuide
       # it also contains all the CSS rules for that selector.
       #
       # Structure:
-      # 
-      # { 
-      #   selector: (string | HTMLElement), 
+      #
+      # {
+      #   selector: (string | HTMLElement),
       #   css: { (css-property-name): (css-property-value), ... }
       # }
       @tokens = []
 
       # Tokenize style sheets
       for sheet in dom.styleSheets
-        for rule in sheet.cssRules
-          @tokens.push
-            selector: rule.selectorText
-            css: @parseCssText rule.style.cssText
+        try
+          for rule in sheet.cssRules
+            @tokens.push
+              selector: rule.selectorText
+              css: @parseCssText rule.style.cssText
+        catch e
+          # Trying to read external stylesheets may cause exceptions due to
+          # cross domain security issues.
 
       # Tokenize inline CSS
       for node in @engine("[style]", dom) when "" != @engine(node).attr "style"
@@ -66,8 +70,8 @@ class exports.CssGuide
     # registry is an array of test definition objects.
     #
     # Structure:
-    # 
-    # { 
+    #
+    # {
     #   description: (string),
     #   clients: (array),
     #   callback: (function)
@@ -93,7 +97,7 @@ class exports.CssGuide
         window.frames.tokenizer.document.write input
         window.frames.tokenizer.document
 
-    # Execute tests related to the requested clients against the provided HTML document 
+    # Execute tests related to the requested clients against the provided HTML document
     execute: (input, clients, seed = 0) ->
       # Brand all elements with a unique id for later pairing with the tested
       # document object. Pairing is required because using the original input
@@ -103,10 +107,10 @@ class exports.CssGuide
 
       # Sanitize markup before injecting to the document
       markup = input.replace(
-        /type="(text\/javascript)"/g, 
+        /type="(text\/javascript)"/g,
         'type="text/disabled-javascript"'
       )
-      
+
       dom = @createDocument markup
 
       parser = new CssGuide.Parser @engine, dom
@@ -120,30 +124,30 @@ class exports.CssGuide
 
       markup = dom.documentElement.innerHTML
 
-      # Copy the data-match-id attributes created by the test suite to original 
-      # source code using data-node-id as identifier in the pairing. 
+      # Copy the data-match-id attributes created by the test suite to original
+      # source code using data-node-id as identifier in the pairing.
       # Using the original input quarantees preserved formatting (line-endings and
       # indentation)
       for match in (markup.match /<[^>]+data-match-id="[^"]+"[^>]*>/gi) || [] when match?
         nid = match.match(/data-node-id="([^"]+)"/i)?[1]
         mid = match.match(/data-match-id="([^"]+)"/i)?[1]
         input = input.replace(
-          new RegExp('data-node-id="' + nid + '"'), 
+          new RegExp('data-node-id="' + nid + '"'),
           'data-match-id="' + mid + '"'
         )
-      
+
       # Clean up any remaining data-node-id attributes
       input = input.replace /\sdata-node-id="[^"]+"/gi, ""
-      
+
       # Wrap matched elements in a span to highlight the matches
       input = input.replace(
-        /<([^>]+?)\s?data-match-id="([^"]+)"([^>]*)>/gi, 
+        /<([^>]+?)\s?data-match-id="([^"]+)"([^>]*)>/gi,
         '{span class="match" data-match-id="$2"}<$1$3>{/span}'
       )
-      
+
       # Escape the input before injecting to the table
       input = jQuery("<div/>").text(input).html()
-      
+
       # After document is escaped the highlight wrappers can be transformed to
       # real DOM nodes
       input = input.replace(
