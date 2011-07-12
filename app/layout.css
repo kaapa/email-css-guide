@@ -79,7 +79,6 @@ th, td {
 .match {
   color: red;
   cursor: pointer;
-  position: relative;
 }
 .match:hover, .highlight {
   background-color: red;
@@ -89,10 +88,8 @@ th, td {
   z-index: 2;
   display: none;
   position: absolute;
-  top: 1em;
-  left: 10px;
   width: 400px;
-  padding-top: 10px;
+  padding-top: 20px;
   cursor: auto;
 }
 .match:hover #popup, #popup:hover {
