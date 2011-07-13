@@ -1,0 +1,122 @@
+body {
+  width: 98%;
+  max-width: 1200px;
+  margin: 0 auto 1em auto;
+}
+.box {
+  margin-top: 1em;
+}
+.box h1 {
+  font-size: 1.2em;
+  border-bottom: 1px dotted gray;
+  padding-bottom: 0.2em;
+}
+form div {
+  margin-top: 0.5em;
+}
+textarea {
+  width: 99.5%;
+  max-width: 1195px;
+  height: 20em;
+}
+.step .number {
+  border: 1px solid gray;
+  color: white;
+  background: lightGray;
+  width: 1.2em;
+  text-align:center;
+  display: inline-block;
+  margin-right: 0.4em;
+}
+.step .tip {
+  color: gray;
+  font-size: 0.8em;
+}
+#clients fieldset {
+  border: none;
+  padding: 0;
+  margin-bottom: 0.5em;
+  margin-left: 6em;
+  position: relative;
+}
+#clients input {
+  margin-right: 0.6em;
+}
+#clients legend {
+  border: none;
+  font-weight: bold;
+  font-size: 0.8em;
+  float: left;
+  width: 5em;
+  text-align: right;
+  position: absolute;
+  left: -6em;
+}
+label {
+  font-size: 0.7em;
+  margin-right: 1em;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid lightGray;
+}
+th {
+  background-color: lightGray;
+  color: gray;
+  text-align: left;
+  padding-right: 1em;
+  vertical-align: top;
+  text-align: right;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+th, td {
+  font-family: monospace;
+  padding: 0.2em 0.5em;
+}
+td {
+  width: 100%;
+}
+.match {
+  color: red;
+  cursor: pointer;
+}
+.match:hover, .highlight {
+  background-color: red;
+  color: white;
+}
+#popup {
+  z-index: 2;
+  display: none;
+  position: absolute;
+  width: 400px;
+  padding-top: 20px;
+  cursor: auto;
+}
+.match:hover #popup, #popup:hover {
+  display: block;
+}
+#popup ul {
+  padding: 0;
+  margin: 0;
+  border: 1px solid black;
+  background: white;
+  list-style-type: none;
+}
+#popup li {
+  margin: 0.2em;
+  font-size: 1em;
+  color: black;
+}
+.clients {
+  font-size: 0.8em;
+  color: gray;
+}
+.clients span {
+  border-bottom: 1px dotted gray;
+  cursor: pointer;
+}
